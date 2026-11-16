@@ -1,4 +1,4 @@
-import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, ChevronsUpDownIcon, EyeOffIcon, InfoIcon, ListFilterIcon, MoreHorizontalIcon, WalletIcon } from "lucide-react"
+import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, ChevronsUpDownIcon, EyeOffIcon, InfoIcon, ListFilterIcon, MoreHorizontalIcon, UserIcon, WalletIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -13,6 +13,10 @@ export const conteudos = ["Texto", "Badge", "Checkbox", "Ações", "Slot"] as co
 export type Conteudo = (typeof conteudos)[number]
 export const alinhamentos = ["left", "right"] as const
 export type Alinhamento = (typeof alinhamentos)[number]
+export const icones = { Carteira: WalletIcon, Calendário: CalendarIcon, Informação: InfoIcon, Pessoa: UserIcon }
+export type Icone = keyof typeof icones
+// Ícone esquerdo e direito: no Figma, um boolean cada, com a troca de ícone à parte.
+export type Icones = { esquerdo?: Icone; direito?: Icone }
 
 const variantes = { Pago: "outline", Pendente: "secondary", Atrasado: "destructive" } as const
 export type Status = keyof typeof variantes
@@ -33,72 +37,70 @@ export function Acoes({ rotulo, expandida }: { rotulo: string; expandida?: boole
   )
 }
 
-export const conteudo = (tipo: Conteudo, texto: string) => ({
-  Texto: () => texto,
-  Badge: () => <Badge variant={variantes[texto as Status] ?? "outline"}>{texto}</Badge>,
-  Checkbox: () => <Checkbox aria-label={`Selecionar ${texto}`} />,
-  Ações: () => <Acoes rotulo={`Ações de ${texto}`} />,
-  Slot: () => <Slot className="min-h-8" />,
-})[tipo]()
+// O texto com os ícones dos lados, no Head, no Body e no Footer.
+export function ComIcones({ texto, esquerdo, direito }: { texto: string } & Icones) {
+  const Esquerdo = esquerdo && icones[esquerdo]
+  const Direito = direito && icones[direito]
+  if (!Esquerdo && !Direito) return <>{texto}</>
+  return <span className="inline-flex items-center gap-(--gap-xs) [&>svg]:size-(--size-md)">{Esquerdo && <Esquerdo />}{texto}{Direito && <Direito />}</span>
+}
 
-export const acoesDoHead = ["Nenhuma", "Ordenar", "Filtrar", "Menu", "Seleção"] as const
+export const conteudo = (tipo: Conteudo, texto: string, lados: Icones = {}) => {
+  const Esquerdo = lados.esquerdo && icones[lados.esquerdo]
+  const Direito = lados.direito && icones[lados.direito]
+  return {
+    Texto: () => <ComIcones texto={texto} {...lados} />,
+    Badge: () => <Badge variant={variantes[texto as Status] ?? "outline"}>{Esquerdo && <Esquerdo data-icon="inline-start" />}{texto}{Direito && <Direito data-icon="inline-end" />}</Badge>,
+    Checkbox: () => <Checkbox aria-label={`Selecionar ${texto}`} />,
+    Ações: () => <Acoes rotulo={`Ações de ${texto}`} />,
+    Slot: () => <Slot className="min-h-8" />,
+  }[tipo]()
+}
+
+export const acoesDoHead = ["Nenhuma", "Ordenável", "Seleção"] as const
 export type AcaoDoHead = (typeof acoesDoHead)[number]
 export const ordens = ["Nenhuma", "Crescente", "Decrescente"] as const
 export type Ordem = (typeof ordens)[number]
-export const icones = { Nenhum: null, Carteira: WalletIcon, Calendário: CalendarIcon, Informação: InfoIcon }
-export type Icone = keyof typeof icones
 
 const setas = { Nenhuma: ChevronsUpDownIcon, Crescente: ArrowUpIcon, Decrescente: ArrowDownIcon }
 const ariaSort = { Nenhuma: "none", Crescente: "ascending", Decrescente: "descending" } as const
 const proxima: Record<Ordem, Ordem> = { Nenhuma: "Crescente", Crescente: "Decrescente", Decrescente: "Nenhuma" }
 
-export type OpcoesDoHead = {
-  texto: string; acao?: AcaoDoHead; ordem?: Ordem; esquerdo?: Icone; direito?: Icone; align?: Alinhamento
-  valores?: string[]; filtrados?: string[]; aoOrdenar?: (o: Ordem) => void; aoFiltrar?: (v: string[]) => void; aoOcultar?: () => void
+export type OpcoesDoHead = Icones & {
+  texto: string; acao?: AcaoDoHead; ordem?: Ordem; filtroAtivo?: boolean; align?: Alinhamento
+  // Só comportamento, sem mudar o desenho: o clique abre o menu de ordenar, filtrar e ocultar em vez de alternar a ordem.
+  menu?: boolean; valores?: string[]; filtrados?: string[]
+  aoOrdenar?: (o: Ordem) => void; aoFiltrar?: (v: string[]) => void; aoOcultar?: () => void
+  marcado?: boolean | "algumas"; aoMarcar?: (v: boolean) => void
 }
 
-// O TableHead com o que o cabeçalho faz. Sem os `ao…`, ele só mostra o estado, como nas páginas de documentação.
-export function Cabecalho({ texto, acao = "Nenhuma", ordem = "Nenhuma", esquerdo = "Nenhum", direito = "Nenhum", align = "left", valores = [], filtrados = [], aoOrdenar, aoFiltrar, aoOcultar }: OpcoesDoHead) {
+// O TableHead: o nome da coluna e, se ela for ordenável, o botão que ordena.
+export function Cabecalho({ texto, acao = "Nenhuma", ordem = "Nenhuma", filtroAtivo, esquerdo, direito, align = "left", menu, valores = [], filtrados = [], aoOrdenar, aoFiltrar, aoOcultar, marcado = false, aoMarcar }: OpcoesDoHead) {
   const direita = align === "right"
-  const Esquerdo = icones[esquerdo]
-  const Direito = icones[direito]
   const Seta = setas[ordem]
-  const nome = <>{Esquerdo && <Esquerdo />}{texto}{Direito && <Direito />}</>
-  // Na coluna à direita, o ícone da ação vai antes do texto, para o texto alinhar com o das células.
-  const comAcao = (acaoEl: React.ReactNode, rotulo: React.ReactNode) => <>{direita && acaoEl}{rotulo}{!direita && acaoEl}</>
-  const seta = <Seta data-icon={direita ? "inline-start" : "inline-end"} className={ordem === "Nenhuma" ? "text-muted" : undefined} />
+  const nome = <ComIcones texto={texto} esquerdo={esquerdo} direito={direito} />
+  // Na coluna à direita, os ícones de estado vão antes do texto, para o texto alinhar com o das células.
+  const estado = <>{filtroAtivo && <ListFilterIcon data-icon={direita ? "inline-start" : "inline-end"} role="img" aria-label="Filtrado" />}<Seta data-icon={direita ? "inline-start" : "inline-end"} className={ordem === "Nenhuma" ? "text-muted" : undefined} /></>
+  const rotulo = <>{direita && estado}{nome}{!direita && estado}</>
   // O botão sm tem o padding da célula; a margem negativa do mesmo token alinha o texto com o das células.
   const botao = `text-mono-sm-bold ${direita ? "-mr-(--padding-lg)" : "-ml-(--padding-lg)"}`
   const itens = valores.map((v) => <DropdownMenuCheckboxItem key={v} checked={filtrados.includes(v)} onCheckedChange={(c) => aoFiltrar?.(c ? [...filtrados, v] : filtrados.filter((x) => x !== v))}>{v}</DropdownMenuCheckboxItem>)
   const dentro = {
-    Nenhuma: () => <span className="inline-flex items-center gap-(--gap-xs) [&_svg]:size-(--size-md)">{nome}</span>,
-    Seleção: () => <Checkbox aria-label="Selecionar todas" checked={false} />,
-    Ordenar: () => <Button variant="ghost" size="sm" className={botao} onClick={() => aoOrdenar?.(proxima[ordem])}>{comAcao(seta, nome)}</Button>,
-    Filtrar: () => (
-      <span className="inline-flex items-center gap-(--gap-2xs) [&>svg]:size-(--size-md)">
-        {comAcao(
-          <DropdownMenu>
-            <DropdownMenuTrigger render={<Button variant={filtrados.length ? "secondary" : "ghost"} size="icon-xs" aria-label={`Filtrar ${texto}`} />}><ListFilterIcon /></DropdownMenuTrigger>
-            <DropdownMenuContent align={direita ? "end" : "start"}>{itens}</DropdownMenuContent>
-          </DropdownMenu>,
-          nome,
-        )}
-      </span>
-    ),
-    Menu: () => (
+    Nenhuma: () => nome,
+    Seleção: () => <Checkbox aria-label="Selecionar todas" checked={marcado === true} indeterminate={marcado === "algumas"} onCheckedChange={(v) => aoMarcar?.(v)} />,
+    Ordenável: () => menu ? (
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className={botao} />}>{comAcao(seta, nome)}</DropdownMenuTrigger>
+        <DropdownMenuTrigger render={<Button variant="ghost" size="sm" className={botao} />}>{rotulo}</DropdownMenuTrigger>
         <DropdownMenuContent align={direita ? "end" : "start"}>
           <DropdownMenuItem onClick={() => aoOrdenar?.("Crescente")}><ArrowUpIcon />Crescente</DropdownMenuItem>
           <DropdownMenuItem onClick={() => aoOrdenar?.("Decrescente")}><ArrowDownIcon />Decrescente</DropdownMenuItem>
           {itens.length > 0 && <><DropdownMenuSeparator /><DropdownMenuSub><DropdownMenuSubTrigger><ListFilterIcon />Filtrar</DropdownMenuSubTrigger><DropdownMenuSubContent>{itens}</DropdownMenuSubContent></DropdownMenuSub></>}
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={aoOcultar}><EyeOffIcon />Ocultar coluna</DropdownMenuItem>
+          {aoOcultar && <><DropdownMenuSeparator /><DropdownMenuItem onClick={aoOcultar}><EyeOffIcon />Ocultar coluna</DropdownMenuItem></>}
         </DropdownMenuContent>
       </DropdownMenu>
-    ),
+    ) : <Button variant="ghost" size="sm" className={botao} onClick={() => aoOrdenar?.(proxima[ordem])}>{rotulo}</Button>,
   }[acao]()
-  return <TableHead className={direita ? "text-right" : undefined} aria-sort={acao === "Ordenar" || acao === "Menu" ? ariaSort[ordem] : undefined}>{dentro}</TableHead>
+  return <TableHead className={direita ? "text-right" : undefined} aria-sort={acao === "Ordenável" ? ariaSort[ordem] : undefined}>{dentro}</TableHead>
 }
 
 export type Fatura = { id: string; cliente: string; status: Status; forma: string; vencimento: string; valor: number }
@@ -129,15 +131,18 @@ const visiveis = (colunas: number) => [...outras.slice(0, colunas - 1), valor]
 
 export const tiposDeLinha = ["Header", "Body", "Footer"] as const
 export type TipoDeLinha = (typeof tiposDeLinha)[number]
-export type OpcoesDaLinha = { tipo: TipoDeLinha; colunas: number; selecao: boolean; acoes: boolean; fatura?: Fatura; total?: number; expandida?: boolean; selecionada?: boolean }
+export type OpcoesDaLinha = {
+  tipo: TipoDeLinha; colunas: number; selecao: boolean; acoes: boolean; fatura?: Fatura; total?: number; expandida?: boolean
+  selecionada?: boolean | "algumas"; aoSelecionar?: (v: boolean) => void
+}
 
-// Uma linha montada com as células da página Célula: Head no cabeçalho, Cell no corpo e no rodapé.
-export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], total = 0, expandida, selecionada }: OpcoesDaLinha) {
+// Uma linha montada com as células da página Célula. `selecionada` no Header marca o "selecionar todas".
+export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], total = 0, expandida, selecionada = false, aoSelecionar }: OpcoesDaLinha) {
   const cols = visiveis(colunas)
   if (tipo === "Header") {
     return (
       <TableRow>
-        {selecao && <Cabecalho texto="" acao="Seleção" />}
+        {selecao && <Cabecalho texto="" acao="Seleção" marcado={selecionada} aoMarcar={aoSelecionar} />}
         {cols.map((c) => <Cabecalho key={c.nome} texto={c.nome} align={"direita" in c ? "right" : "left"} />)}
         {acoes && <TableHead><span className="sr-only">Ações</span></TableHead>}
       </TableRow>
@@ -155,8 +160,8 @@ export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], tota
     )
   }
   return (
-    <TableRow data-state={selecionada ? "selected" : undefined}>
-      {selecao && <TableCell><Checkbox aria-label={`Selecionar ${fatura.id}`} checked={selecionada ?? false} /></TableCell>}
+    <TableRow data-state={selecionada === true ? "selected" : undefined}>
+      {selecao && <TableCell><Checkbox aria-label={`Selecionar ${fatura.id}`} checked={selecionada === true} onCheckedChange={(v) => aoSelecionar?.(v)} /></TableCell>}
       {cols.map((c) => <TableCell key={c.nome} className={"direita" in c ? "text-right" : undefined}>{c.celula(fatura)}</TableCell>)}
       {acoes && <TableCell className="text-right"><Acoes rotulo={`Ações de ${fatura.id}`} expandida={expandida} /></TableCell>}
     </TableRow>
