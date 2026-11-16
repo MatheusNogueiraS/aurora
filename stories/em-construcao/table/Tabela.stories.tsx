@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ArrowUpDownIcon, ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon } from "lucide-react"
 import { useState } from "react"
 
 import { Button } from "@/components/ui/button"
@@ -9,7 +9,7 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Opcao, Opcoes, pagina, vitrine } from "../../componentes/Opcoes"
-import { Acoes, faturas, Linha, reais } from "./partes"
+import { Acoes, Cabecalho, faturas, Linha, reais, type Ordem } from "./partes"
 
 type Controles = { colunas: number; linhas: number; cabecalho: boolean; selecao: boolean; acoes: boolean; rodape: boolean; legenda: boolean; selecionada: boolean }
 
@@ -88,11 +88,16 @@ const porPagina = 5
 // O exemplo Data table do shadcn, com estado do React no lugar do TanStack Table: filtro, ordenação, seleção, colunas e páginas.
 function TabelaDeDados() {
   const [filtro, setFiltro] = useState("")
-  const [crescente, setCrescente] = useState<boolean | null>(null)
+  const [status, setStatus] = useState<string[]>([])
+  const [ordem, setOrdem] = useState<{ coluna: "email" | "valor"; sentido: Ordem }>({ coluna: "email", sentido: "Nenhuma" })
   const [marcadas, setMarcadas] = useState<string[]>([])
   const [visiveis, setVisiveis] = useState<Record<Coluna, boolean>>({ status: true, email: true, valor: true })
   const [pagina, setPagina] = useState(0)
-  const filtradas = pagamentos.filter((p) => p.email.includes(filtro.toLowerCase())).sort((a, b) => (crescente === null ? 0 : (crescente ? 1 : -1) * a.email.localeCompare(b.email)))
+  const ordenar = (coluna: "email" | "valor") => (sentido: Ordem) => setOrdem({ coluna, sentido })
+  const sinal = { Nenhuma: 0, Crescente: 1, Decrescente: -1 }[ordem.sentido]
+  const filtradas = pagamentos
+    .filter((p) => p.email.includes(filtro.toLowerCase()) && (!status.length || status.includes(p.status)))
+    .sort((a, b) => sinal * (ordem.coluna === "email" ? a.email.localeCompare(b.email) : a.valor - b.valor))
   const naPagina = filtradas.slice(pagina * porPagina, (pagina + 1) * porPagina)
   const todas = naPagina.length > 0 && naPagina.every((p) => marcadas.includes(p.id))
   const colunas = (Object.keys(nomes) as Coluna[]).filter((c) => visiveis[c])
@@ -112,9 +117,9 @@ function TabelaDeDados() {
           <TableHeader>
             <TableRow>
               <TableHead><Checkbox aria-label="Selecionar todas" checked={todas} indeterminate={!todas && naPagina.some((p) => marcadas.includes(p.id))} onCheckedChange={(v) => setMarcadas((m) => (v ? [...new Set([...m, ...naPagina.map((p) => p.id)])] : m.filter((id) => !naPagina.some((p) => p.id === id))))} /></TableHead>
-              {visiveis.status && <TableHead>Status</TableHead>}
-              {visiveis.email && <TableHead><Button variant="ghost" onClick={() => setCrescente((c) => !c)}>E-mail <ArrowUpDownIcon /></Button></TableHead>}
-              {visiveis.valor && <TableHead className="text-right">Valor</TableHead>}
+              {visiveis.status && <Cabecalho texto="Status" acao="Filtrar" valores={[...new Set(pagamentos.map((p) => p.status))]} filtrados={status} aoFiltrar={(v) => { setStatus(v); setPagina(0) }} />}
+              {visiveis.email && <Cabecalho texto="E-mail" acao="Ordenar" ordem={ordem.coluna === "email" ? ordem.sentido : "Nenhuma"} aoOrdenar={ordenar("email")} />}
+              {visiveis.valor && <Cabecalho texto="Valor" acao="Menu" align="right" ordem={ordem.coluna === "valor" ? ordem.sentido : "Nenhuma"} aoOrdenar={ordenar("valor")} aoOcultar={() => setVisiveis((s) => ({ ...s, valor: false }))} />}
               <TableHead><span className="sr-only">Ações</span></TableHead>
             </TableRow>
           </TableHeader>
@@ -145,6 +150,6 @@ function TabelaDeDados() {
 
 export const Composicoes: Story = {
   name: "Composições",
-  parameters: vitrine("O exemplo Data table do shadcn: busca, escolha de colunas, seleção com \"selecionar todas\", ordenação pelo e-mail, menu de ações, linha de \"nenhum resultado\" e paginação. A tabela fica numa moldura com borda; a busca e a paginação ficam fora dela."),
+  parameters: vitrine("O exemplo Data table do shadcn, com as ações do Head funcionando: Status filtra pela lista de valores, E-mail ordena no clique e Valor abre o menu (ordenar e ocultar a coluna). Tem ainda busca, escolha de colunas, seleção com \"selecionar todas\", menu de ações, linha de \"nenhum resultado\" e paginação. A tabela fica numa moldura com borda; a busca e a paginação ficam fora dela."),
   render: () => <TabelaDeDados />,
 }
