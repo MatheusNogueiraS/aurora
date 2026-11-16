@@ -10,7 +10,7 @@ const tipos = ["Head", "Body", "Footer"] as const
 type Tipo = (typeof tipos)[number]
 
 type Controles = {
-  tipo: Tipo; texto: string; align: Alinhamento; conteudo: Conteudo; acao: AcaoDoHead; ordem: Ordem; filtroAtivo: boolean
+  tipo: Tipo; texto: string; apoio: string; align: Alinhamento; conteudo: Conteudo; acao: AcaoDoHead; ordem: Ordem; filtroAtivo: boolean
   iconeEsquerdo: boolean; esquerdo: Icone; iconeDireito: boolean; direito: Icone
 }
 
@@ -23,7 +23,7 @@ const celula = (args: Controles, aoOrdenar?: (o: Ordem) => void, marcado?: boole
   return (
     <Table>
       {tipo === "Head" && <TableHeader><TableRow><Cabecalho texto={texto} acao={acao} ordem={ordem} filtroAtivo={filtroAtivo} align={align} {...lados} aoOrdenar={aoOrdenar} marcado={marcado} aoMarcar={aoMarcar} /></TableRow></TableHeader>}
-      {tipo === "Body" && <TableBody><TableRow><TableCell className={classe}>{conteudo(args.conteudo, texto, lados)}</TableCell></TableRow></TableBody>}
+      {tipo === "Body" && <TableBody><TableRow><TableCell className={classe}>{conteudo(args.conteudo, texto, lados, args.apoio)}</TableCell></TableRow></TableBody>}
       {tipo === "Footer" && <TableFooter><TableRow><TableCell className={classe}><ComIcones texto={texto} {...lados} /></TableCell></TableRow></TableFooter>}
     </Table>
   )
@@ -36,7 +36,7 @@ function Viva(args: Controles) {
   return celula({ ...args, ordem }, setOrdem, marcado, setMarcado)
 }
 
-const base: Controles = { tipo: "Head", texto: "Valor", align: "left", conteudo: "Texto", acao: "Ordenável", ordem: "Nenhuma", filtroAtivo: false, iconeEsquerdo: false, esquerdo: "Carteira", iconeDireito: false, direito: "Informação" }
+const base: Controles = { tipo: "Head", texto: "Valor", apoio: "CPF •••.456.789-••", align: "left", conteudo: "Texto", acao: "Ordenável", ordem: "Nenhuma", filtroAtivo: false, iconeEsquerdo: false, esquerdo: "Carteira", iconeDireito: false, direito: "Informação" }
 const ordenavel = { if: { arg: "acao", eq: "Ordenável" } }
 
 const meta = {
@@ -52,7 +52,8 @@ const meta = {
     tipo: { name: "Type", control: "inline-radio", options: tipos, description: "`Head` é o `TableHead`: 48 px de altura e negrito (`text-mono-sm-bold`). `Body` é o `TableCell`, com padding de 12 px. `Footer` é o mesmo `TableCell` dentro do `TableFooter`, que dá o fundo `muted/50` e o negrito.", table: { category: "Aparência" } },
     texto: { name: "Texto", control: "text", description: "O nome da coluna no Head; o dado no Body; o total no Footer.", table: { category: "Conteúdo" } },
     align: { name: "Align", control: "inline-radio", options: alinhamentos, description: "No código, `className=\"text-right\"`. Valores e ações vão à direita; o resto, à esquerda. No Head ordenável à direita, a seta passa para antes do texto, para o texto alinhar com o das células.", table: { category: "Aparência" } },
-    conteudo: { name: "Conteúdo", control: "inline-radio", options: conteudos, if: { arg: "tipo", eq: "Body" }, description: "O dado, como nos exemplos do shadcn: **Texto**; **Badge**, para status; **Checkbox**, para selecionar a linha (a célula perde o padding da direita); **Ações**, um botão que abre o menu da linha; **Slot**, qualquer outro dado. Os ícones valem para Texto e Badge.", table: { category: "Conteúdo" } },
+    conteudo: { name: "Conteúdo", control: "inline-radio", options: conteudos, if: { arg: "tipo", eq: "Body" }, description: "O dado: **Texto**; **Duas linhas**, o texto com um de apoio embaixo, em `text-muted`, como o nome e o CPF; **Badge**, para status; **Checkbox**, para selecionar a linha (a célula perde o padding da direita); **Switch**, para ligar e desligar algo da linha; **Button**, uma ação com nome (`outline`, `xs`, para não aumentar a linha); **Ações**, o botão que abre o menu da linha; **Slot**, qualquer outro dado. Os ícones valem para Texto, Duas linhas, Badge e Button.", table: { category: "Conteúdo" } },
+    apoio: { name: "Texto de apoio", control: "text", if: { arg: "conteudo", eq: "Duas linhas" }, description: "A segunda linha de Duas linhas.", table: { category: "Conteúdo" } },
     acao: { name: "Ação", control: "inline-radio", options: acoesDoHead, if: { arg: "tipo", eq: "Head" }, description: "**Ordenável**: o nome vira um botão com a seta da ordem. No código, o clique alterna a ordem ou abre um menu com ordenar, filtrar e ocultar a coluna (`menu`), como no exemplo Tasks do shadcn; o desenho é o mesmo, e a Data table da página Tabela mostra os dois. **Seleção**: o Checkbox de selecionar todas, na coluna de seleção.", table: { category: "Conteúdo" } },
     ordem: { name: "Ordem", control: "inline-radio", options: ordens, ...ordenavel, description: "A seta mostra o estado: ⇅ apagada sem ordem, ↑ crescente, ↓ decrescente. Clique no nome para alternar. No código, `aria-sort` no `TableHead` avisa o leitor de tela.", table: { category: "Estado" } },
     filtroAtivo: { name: "Filtro ativo", control: "boolean", ...ordenavel, description: "Um ícone de filtro ao lado do nome, quando a coluna está filtrada pelo menu.", table: { category: "Estado" } },
@@ -108,11 +109,14 @@ export const Icones: Story = {
 }
 
 // Cada conteúdo com um dado do jeito que aparece nos exemplos.
-const dados: Record<Conteudo, Partial<Controles>> = { Texto: { texto: "FAT-001" }, Badge: { texto: "Pendente" }, Checkbox: { texto: "FAT-001" }, Ações: { texto: "FAT-001", align: "right" }, Slot: {} }
+const dados: Record<Conteudo, Partial<Controles>> = {
+  Texto: { texto: "FAT-001" }, "Duas linhas": { texto: "Ana Souza" }, Badge: { texto: "Pendente" }, Checkbox: { texto: "FAT-001" },
+  Switch: { texto: "Débito automático" }, Button: { texto: "Pagar" }, Ações: { texto: "FAT-001", align: "right" }, Slot: {},
+}
 
 export const Conteudos: Story = {
   name: "Conteúdo do Body",
-  parameters: vitrine("Os dados dos exemplos do shadcn. Checkbox e Ações ficam em colunas estreitas, nas pontas da linha."),
+  parameters: vitrine("Os dados que cabem numa célula, dos exemplos do shadcn e do uso no banco. Checkbox, Switch, Button e Ações ficam em colunas estreitas; Duas linhas deixa a linha mais alta."),
   render: () => <Opcoes>{conteudos.map((c) => <Opcao key={c} nome={c}><Viva {...base} tipo="Body" conteudo={c} {...dados[c]} /></Opcao>)}</Opcoes>,
 }
 

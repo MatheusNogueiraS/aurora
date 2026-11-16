@@ -3,13 +3,14 @@ import { ArrowDownIcon, ArrowUpIcon, CalendarIcon, ChevronsUpDownIcon, EyeOffIco
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
+import { Switch } from "@/components/ui/switch"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { TableCell, TableHead, TableRow } from "@/components/ui/table"
 import { Slot } from "../../componentes/Opcoes"
 
 // Peças comuns às páginas Célula, Linha e Tabela.
 
-export const conteudos = ["Texto", "Badge", "Checkbox", "Ações", "Slot"] as const
+export const conteudos = ["Texto", "Duas linhas", "Badge", "Checkbox", "Switch", "Button", "Ações", "Slot"] as const
 export type Conteudo = (typeof conteudos)[number]
 export const alinhamentos = ["left", "right"] as const
 export type Alinhamento = (typeof alinhamentos)[number]
@@ -45,11 +46,21 @@ export function ComIcones({ texto, esquerdo, direito }: { texto: string } & Icon
   return <span className="inline-flex items-center gap-(--gap-xs) [&>svg]:size-(--size-md)">{Esquerdo && <Esquerdo />}{texto}{Direito && <Direito />}</span>
 }
 
-export const conteudo = (tipo: Conteudo, texto: string, lados: Icones = {}) => {
+// `apoio` é a segunda linha de "Duas linhas", em `text-muted`, como o CPF embaixo do nome.
+export const conteudo = (tipo: Conteudo, texto: string, lados: Icones = {}, apoio = "CPF •••.456.789-••") => {
   const Esquerdo = lados.esquerdo && icones[lados.esquerdo]
   const Direito = lados.direito && icones[lados.direito]
   return {
     Texto: () => <ComIcones texto={texto} {...lados} />,
+    "Duas linhas": () => (
+      <span className="inline-flex items-center gap-(--gap-sm) [&>svg]:size-(--size-md)">
+        {Esquerdo && <Esquerdo />}
+        <span className="flex flex-col text-left"><span>{texto}</span><span className="text-muted">{apoio}</span></span>
+        {Direito && <Direito />}
+      </span>
+    ),
+    Switch: () => <Switch aria-label={texto} />,
+    Button: () => <Button variant="outline" size="xs">{Esquerdo && <Esquerdo data-icon="inline-start" />}{texto}{Direito && <Direito data-icon="inline-end" />}</Button>,
     Badge: () => <Badge variant={variantes[texto as Status] ?? "outline"}>{Esquerdo && <Esquerdo data-icon="inline-start" />}{texto}{Direito && <Direito data-icon="inline-end" />}</Badge>,
     Checkbox: () => <Checkbox aria-label={`Selecionar ${texto}`} />,
     Ações: () => <Acoes rotulo={`Ações de ${texto}`} />,
