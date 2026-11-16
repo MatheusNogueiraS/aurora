@@ -12,7 +12,6 @@ import {
   MoonIcon,
   MoreHorizontalIcon,
   PlusIcon,
-  RulerIcon,
   SearchIcon,
   SendIcon,
   ShieldCheckIcon,
@@ -94,7 +93,6 @@ import { DocumentsView } from "./views/documents"
 import { InboxView } from "./views/inbox"
 import { OverviewView } from "./views/overview"
 import { PaymentsView } from "./views/payments"
-import { RefinamentoView } from "./views/refinamento"
 import { SiteView } from "./views/site"
 import { StatusView } from "./views/status"
 
@@ -107,7 +105,6 @@ const views: View[] = [
   { id: "documentos", title: "Documentos", icon: FileTextIcon, render: () => <DocumentsView /> },
   { id: "institucional", title: "Institucional", icon: BuildingIcon, render: () => <SiteView /> },
   { id: "status", title: "Status e feedback", icon: BellIcon, render: () => <StatusView /> },
-  { id: "refinamento", title: "Refinamento", icon: RulerIcon, render: () => <RefinamentoView /> },
 ]
 
 const subscribeHash = (cb: () => void) => {
