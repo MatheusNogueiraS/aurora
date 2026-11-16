@@ -29,7 +29,7 @@ const base: Controles = { tipo: "Body", colunas: 4, selecao: false, acoes: false
 const meta = {
   title: "Em construção/Table/Linha",
   render: (args) => <div className="w-2xl max-w-full">{linha(args)}</div>,
-  parameters: pagina("`TableRow`: uma fila de células da página Célula. É a linha que tem a borda de baixo e o fundo de hover e de selecionado. No Figma, a linha é um slot de células, todas em Fill container, e a mesma quantidade de células em todas as linhas mantém as colunas alinhadas."),
+  parameters: pagina("`TableRow`: uma fila de células da página Célula. É a linha que tem a borda de baixo e o fundo de hover e de selecionado. A linha só recebe Células, sem slot para outros componentes. No Figma, as células ficam em Fill container, e a mesma quantidade de células em todas as linhas mantém as colunas alinhadas."),
   argTypes: {
     tipo: { name: "Type", control: "inline-radio", options: tiposDeLinha, description: "Em que seção a linha está: `TableHeader` (células Head, borda embaixo), `TableBody` (células Body) ou `TableFooter` (fundo `muted/50`, negrito e borda em cima). No rodapé, \"Total\" ocupa as colunas antes do valor, com `colSpan`.", table: { category: "Aparência" } },
     colunas: { name: "Colunas", control: { type: "range", min: 1, max: 6, step: 1 }, description: "Quantas células de dados. O Valor fica sempre por último, embaixo do total do rodapé; com uma coluna, só ele aparece.", table: { category: "Conteúdo" } },

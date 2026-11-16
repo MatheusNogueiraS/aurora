@@ -8,12 +8,12 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCaption, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Opcao, Opcoes, pagina, Slot, vitrine } from "../../componentes/Opcoes"
+import { Opcao, Opcoes, pagina, vitrine } from "../../componentes/Opcoes"
 import { Acoes, faturas, Linha, reais } from "./partes"
 
-type Controles = { colunas: number; linhas: number; cabecalho: boolean; selecao: boolean; acoes: boolean; slot: boolean; rodape: boolean; legenda: boolean; selecionada: boolean }
+type Controles = { colunas: number; linhas: number; cabecalho: boolean; selecao: boolean; acoes: boolean; rodape: boolean; legenda: boolean; selecionada: boolean }
 
-const tabela = ({ colunas, linhas, cabecalho, selecao, acoes, slot, rodape, legenda, selecionada }: Controles) => {
+const tabela = ({ colunas, linhas, cabecalho, selecao, acoes, rodape, legenda, selecionada }: Controles) => {
   const mostradas = faturas.slice(0, linhas)
   const linha = { colunas, selecao, acoes }
   return (
@@ -21,27 +21,24 @@ const tabela = ({ colunas, linhas, cabecalho, selecao, acoes, slot, rodape, lege
       {legenda && <TableCaption>Faturas de novembro.</TableCaption>}
       {cabecalho && <TableHeader><Linha tipo="Header" {...linha} /></TableHeader>}
       <TableBody>
-        {mostradas.map((f, i) => <Linha key={f.id} tipo="Body" {...linha} fatura={f} selecionada={selecionada && i === Math.min(1, linhas - 1)} />)}
-        {slot && <TableRow><TableCell colSpan={colunas + (selecao ? 1 : 0) + (acoes ? 1 : 0)}><Slot className="min-h-12" /></TableCell></TableRow>}
-      </TableBody>
+        {mostradas.map((f, i) => <Linha key={f.id} tipo="Body" {...linha} fatura={f} selecionada={selecionada && i === Math.min(1, linhas - 1)} />)}      </TableBody>
       {rodape && <TableFooter><Linha tipo="Footer" {...linha} total={mostradas.reduce((s, f) => s + f.valor, 0)} /></TableFooter>}
     </Table>
   )
 }
 
-const base: Controles = { colunas: 4, linhas: 4, cabecalho: true, selecao: false, acoes: false, slot: false, rodape: true, legenda: true, selecionada: false }
+const base: Controles = { colunas: 4, linhas: 4, cabecalho: true, selecao: false, acoes: false, rodape: true, legenda: true, selecionada: false }
 
 const meta = {
   title: "Em construção/Table/Tabela",
   render: (args) => <div className="w-2xl max-w-full">{tabela(args)}</div>,
-  parameters: pagina("`Table`: uma linha de cabeçalho, o corpo com as linhas, o rodapé e a legenda, montados com as páginas Linha e Célula. O texto é monoespaçado (`text-mono-sm`), para os números alinharem. A largura preenche o pai e, se faltar espaço, a tabela rola para o lado. A amostra do topo junta os exemplos Demo, Footer e Actions do shadcn: ligue Rodapé, Legenda e Ações."),
+  parameters: pagina("`Table`: uma linha de cabeçalho, o corpo com as linhas, o rodapé e a legenda, montados com as páginas Linha e Célula. A tabela só recebe Linhas, sem slot para outros componentes: o cabeçalho, o corpo e o rodapé são feitos de Linhas, e as Linhas, de Células. O texto é monoespaçado (`text-mono-sm`), para os números alinharem. A largura preenche o pai e, se faltar espaço, a tabela rola para o lado. A amostra do topo junta os exemplos Demo, Footer e Actions do shadcn: ligue Rodapé, Legenda e Ações."),
   argTypes: {
     colunas: { name: "Colunas", control: { type: "range", min: 1, max: 6, step: 1 }, description: "Quantas colunas de dados em cada linha. O Valor fica sempre por último.", table: { category: "Conteúdo" } },
     linhas: { name: "Linhas", control: { type: "range", min: 1, max: 10, step: 1 }, description: "Quantas linhas no `TableBody`. O total do rodapé soma as que aparecem.", table: { category: "Conteúdo" } },
     cabecalho: { name: "Cabeçalho", control: "boolean", description: "`TableHeader` com uma Linha Header.", table: { category: "Conteúdo" } },
     selecao: { name: "Seleção", control: "boolean", description: "Coluna de Checkbox no começo de todas as linhas. Aqui a caixa só mostra o estado da linha; a seleção funcionando está na Data table, em Composições.", table: { category: "Conteúdo" } },
     acoes: { name: "Ações", control: "boolean", description: "Coluna com o menu de ações no fim de todas as linhas, como no exemplo Actions do shadcn.", table: { category: "Conteúdo" } },
-    slot: { name: "Slot", control: "boolean", description: "O corpo aceita qualquer quantidade de Linhas. Ligue para ver a região onde elas entram, no fim do corpo; no Figma, o corpo é um slot de instâncias de Linha.", table: { category: "Conteúdo" } },
     rodape: { name: "Rodapé", control: "boolean", description: "`TableFooter` com uma Linha Footer, para o total.", table: { category: "Conteúdo" } },
     legenda: { name: "Legenda", control: "boolean", description: "`TableCaption`, embaixo da tabela.", table: { category: "Conteúdo" } },
     selecionada: { name: "Linha selecionada", control: "boolean", description: "A segunda linha (ou a única) com `data-state=\"selected\"`, como fica depois de marcar a caixa dela.", table: { category: "Estado" } },
