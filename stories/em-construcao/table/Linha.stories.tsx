@@ -13,8 +13,9 @@ type Controles = Omit<OpcoesDaLinha, "fatura" | "total" | "selecionada"> & { est
 
 // A linha vai na seção do Type. No corpo, a última linha perde a borda; a `tr` escondida depois dela deixa a borda aparecer.
 // Marcar a caixa da linha leva ao State Selected, e desmarcar, ao Default; quem chama guarda o estado.
+// As Ações são só do Body: no cabeçalho e no rodapé, a célula delas ficaria vazia.
 const linha = ({ estado, borda, ...props }: Controles, aoSelecionar?: (v: boolean) => void) => {
-  const conteudo = <Linha {...props} total={250} selecionada={estado === "Selected"} aoSelecionar={aoSelecionar} />
+  const conteudo = <Linha {...props} acoes={props.tipo === "Body" && props.acoes} total={250} selecionada={estado === "Selected"} aoSelecionar={aoSelecionar} />
   return (
     <Simula estado={estado === "Hover" ? "Hover" : "Default"} so="[data-slot=table-row]">
       <Table>
@@ -46,7 +47,7 @@ const meta = {
     tipo: { name: "Type", control: "inline-radio", options: tiposDeLinha, description: "Em que seção a linha está: `TableHeader` (células Head, borda embaixo), `TableBody` (células Body) ou `TableFooter` (fundo `muted/50`, negrito e borda em cima). No rodapé, \"Total\" ocupa as colunas antes do valor, com `colSpan`.", table: { category: "Aparência" } },
     colunas: { name: "Colunas", control: { type: "range", min: 1, max: 6, step: 1 }, description: "Quantas células de dados. O Valor fica sempre por último, embaixo do total do rodapé; com uma coluna, só ele aparece.", table: { category: "Conteúdo" } },
     selecao: { name: "Seleção", control: "boolean", description: "Uma célula com Checkbox no começo: \"selecionar todas\" no cabeçalho, \"selecionar esta\" no corpo. Marcar a caixa do corpo leva a linha ao Selected.", table: { category: "Conteúdo" } },
-    acoes: { name: "Ações", control: "boolean", description: "Uma célula com o menu de ações no fim. No cabeçalho, ela fica vazia, com o nome só para o leitor de tela. Com o menu aberto, a linha fica com o fundo do hover (`aria-expanded` no botão): é o Hover, sem estado próprio.", table: { category: "Conteúdo" } },
+    acoes: { name: "Ações", control: "boolean", if: { arg: "tipo", eq: "Body" }, description: "Só no Body: uma célula com o menu de ações no fim. Numa tabela com essa coluna, o cabeçalho e o rodapé ganham uma célula vazia no mesmo lugar, para as colunas continuarem alinhadas. Com o menu aberto, a linha fica com o fundo do hover (`aria-expanded` no botão): é o Hover, sem estado próprio.", table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: estados, description: "**Hover** (simulado): fundo `muted/50`. **Selected**: `data-state=\"selected\"`, fundo `muted`, que a linha recebe quando a caixa dela é marcada; é do Body. O código aplica o hover a qualquer linha, inclusive à do cabeçalho.", table: { category: "Estado" } },
     borda: { name: "Borda", control: "boolean", description: "A linha de baixo. O `TableBody` tira a borda da última linha, então desligado é a última do corpo. Só muda o Body: o cabeçalho tem sempre a borda, e o rodapé nunca.", table: { category: "Aparência" } },
   },
@@ -72,7 +73,7 @@ export const Estados: Story = {
 
 export const SelecaoEAcoes: Story = {
   name: "Seleção e ações",
-  parameters: vitrine("As duas colunas estreitas das pontas, dos exemplos Actions e Data table do shadcn, nas três seções."),
+  parameters: vitrine("As duas colunas estreitas das pontas, dos exemplos Actions e Data table do shadcn. A Seleção aparece nas três seções (no cabeçalho, é o \"selecionar todas\"); as Ações, só no corpo."),
   render: () => <Opcoes larga>{tiposDeLinha.map((t) => <Opcao key={t} nome={t}><Viva {...base} tipo={t} colunas={2} acoes /></Opcao>)}</Opcoes>,
 }
 

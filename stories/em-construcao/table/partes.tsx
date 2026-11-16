@@ -22,11 +22,11 @@ export type Icones = { esquerdo?: Icone; direito?: Icone }
 const variantes = { Pago: "outline", Pendente: "secondary", Atrasado: "destructive" } as const
 export type Status = keyof typeof variantes
 
-// O menu de ações do exemplo Actions do shadcn. O botão fica em 24 px para não aumentar a linha, e o ícone em 16 px, como no exemplo, para ser visto.
+// O menu de ações do exemplo Actions do shadcn.
 export function Acoes({ rotulo }: { rotulo: string }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={rotulo} />}><MoreHorizontalIcon className="size-(--size-md)" /></DropdownMenuTrigger>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={rotulo} />}><MoreHorizontalIcon /></DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>Editar</DropdownMenuItem>
         <DropdownMenuItem>Duplicar</DropdownMenuItem>

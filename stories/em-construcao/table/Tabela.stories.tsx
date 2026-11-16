@@ -44,7 +44,7 @@ const meta = {
     linhas: { name: "Linhas", control: { type: "range", min: 1, max: 10, step: 1 }, description: "Quantas linhas no `TableBody`. O total do rodapé soma as que aparecem.", table: { category: "Conteúdo" } },
     cabecalho: { name: "Cabeçalho", control: "boolean", description: "`TableHeader` com uma Linha Header.", table: { category: "Conteúdo" } },
     selecao: { name: "Seleção", control: "boolean", description: "Coluna de Checkbox no começo de todas as linhas. Marcar a caixa seleciona a linha; a do cabeçalho seleciona todas.", table: { category: "Conteúdo" } },
-    acoes: { name: "Ações", control: "boolean", description: "Coluna com o menu de ações no fim de todas as linhas, como no exemplo Actions do shadcn.", table: { category: "Conteúdo" } },
+    acoes: { name: "Ações", control: "boolean", description: "Coluna com o menu de ações no fim das linhas do corpo, como no exemplo Actions do shadcn. O cabeçalho e o rodapé ganham uma célula vazia no mesmo lugar, para as colunas continuarem alinhadas.", table: { category: "Conteúdo" } },
     rodape: { name: "Rodapé", control: "boolean", description: "`TableFooter` com uma Linha Footer, para o total.", table: { category: "Conteúdo" } },
     legenda: { name: "Legenda", control: "boolean", description: "`TableCaption`, embaixo da tabela.", table: { category: "Conteúdo" } },
     selecionada: { name: "Linha selecionada", control: "boolean", description: "Começa com a segunda linha (ou a única) com `data-state=\"selected\"`, como fica depois de marcar a caixa dela. Com Seleção ligada, as caixas mudam a seleção dali em diante.", table: { category: "Estado" } },
