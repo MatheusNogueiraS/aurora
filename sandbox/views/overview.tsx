@@ -1,10 +1,13 @@
 import * as React from "react"
 import {
-  ArrowUpDownIcon,
+  ArrowDownIcon,
+  ArrowUpIcon,
   CheckCircle2Icon,
+  ChevronsUpDownIcon,
   CreditCardIcon,
   DownloadIcon,
   InboxIcon,
+  ListFilterIcon,
   MoreHorizontalIcon,
   PlusIcon,
   SearchIcon,
@@ -57,11 +60,15 @@ import {
 } from "@/components/ui/dialog"
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
@@ -164,7 +171,6 @@ const statusVariant: Record<Status, "default" | "secondary" | "destructive" | "o
   Ativo: "default", Trial: "secondary", Inadimplente: "destructive", Cancelado: "outline",
 }
 const countries = { br: "Brasil", pt: "Portugal", us: "Estados Unidos" }
-const statusFilters = { todos: "Todos os status", Ativo: "Ativo", Trial: "Trial", Inadimplente: "Inadimplente", Cancelado: "Cancelado" }
 const brl = (n: number) => n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
 const initials = (n: string) => n.split(" ").map((p) => p[0]).join("")
 
@@ -627,19 +633,51 @@ const stay = (go: () => void) => (e: React.MouseEvent) => {
   go()
 }
 
+type Sentido = "asc" | "desc"
+type Coluna = "name" | "status" | "mrr"
+
+// O Head ordenável da página Table: a seta mostra o estado, o ícone de filtro aparece com filtro aplicado, e a margem
+// negativa do mesmo token do padding do botão alinha o texto com o das células. Com `menu`, o clique abre o menu.
+function Ordenavel({ texto, dir, aoOrdenar, direita, filtrado, menu }: { texto: string; dir?: Sentido; aoOrdenar?: (d?: Sentido) => void; direita?: boolean; filtrado?: boolean; menu?: React.ReactNode }) {
+  const Seta = dir === "asc" ? ArrowUpIcon : dir === "desc" ? ArrowDownIcon : ChevronsUpDownIcon
+  const lado = direita ? "inline-start" : "inline-end"
+  const estado = <>{filtrado && <ListFilterIcon data-icon={lado} role="img" aria-label="Filtrado" />}<Seta data-icon={lado} className={dir ? undefined : "text-muted"} /></>
+  const rotulo = <>{direita && estado}{texto}{!direita && estado}</>
+  const botao = { variant: "ghost" as const, size: "sm" as const, className: `text-mono-sm-bold ${direita ? "-mr-(--padding-lg)" : "-ml-(--padding-lg)"}` }
+  return (
+    <TableHead className={direita ? "text-right" : undefined} aria-sort={dir === "asc" ? "ascending" : dir === "desc" ? "descending" : "none"}>
+      {menu ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger render={<Button {...botao} />}>{rotulo}</DropdownMenuTrigger>
+          <DropdownMenuContent align={direita ? "end" : "start"}>{menu}</DropdownMenuContent>
+        </DropdownMenu>
+      ) : (
+        <Button {...botao} onClick={() => aoOrdenar?.(dir === "asc" ? "desc" : dir === "desc" ? undefined : "asc")}>{rotulo}</Button>
+      )}
+    </TableHead>
+  )
+}
+
+const todosStatus: Status[] = ["Ativo", "Trial", "Inadimplente", "Cancelado"]
+
 function CustomersTable() {
   const [q, setQ] = React.useState("")
-  const [status, setStatus] = React.useState<string>("todos")
-  const [asc, setAsc] = React.useState(false)
+  const [status, setStatus] = React.useState<Status[]>([])
+  const [ordem, setOrdem] = React.useState<{ col: Coluna; dir: Sentido } | null>({ col: "mrr", dir: "desc" })
   const [page, setPage] = React.useState(0)
   const [sel, setSel] = React.useState<Set<number>>(new Set())
+  const [renova, setRenova] = React.useState<Set<number>>(() => new Set(customers.filter((c) => c.id % 3 !== 0).map((c) => c.id)))
 
   const rows = React.useMemo(() => {
     const t = q.trim().toLowerCase()
+    const sinal = ordem?.dir === "asc" ? 1 : -1
     return customers
-      .filter((c) => (status === "todos" || c.status === status) && (!t || c.name.toLowerCase().includes(t) || c.email.includes(t)))
-      .sort((a, b) => (asc ? a.mrr - b.mrr : b.mrr - a.mrr))
-  }, [q, status, asc])
+      .filter((c) => (!status.length || status.includes(c.status)) && (!t || c.name.toLowerCase().includes(t) || c.email.includes(t)))
+      .sort((a, b) => (!ordem ? 0 : sinal * (ordem.col === "mrr" ? a.mrr - b.mrr : a[ordem.col].localeCompare(b[ordem.col]))))
+  }, [q, status, ordem])
+  const dirDe = (col: Coluna) => (ordem?.col === col ? ordem.dir : undefined)
+  const ordenar = (col: Coluna) => (dir?: Sentido) => setOrdem(dir ? { col, dir } : null)
+  const filtrar = (s: Status, on: boolean) => { setStatus((f) => (on ? [...f, s] : f.filter((x) => x !== s))); setPage(0); setSel(new Set()) }
 
   const pages = Math.max(1, Math.ceil(rows.length / PAGE))
   const cur = Math.min(page, pages - 1)
@@ -666,14 +704,6 @@ function CustomersTable() {
             <InputGroupAddon><SearchIcon /></InputGroupAddon>
             <InputGroupInput placeholder="Buscar cliente…" value={q} onChange={(e) => { setQ(e.target.value); setPage(0); setSel(new Set()) }} />
           </InputGroup>
-          <Select value={status} items={statusFilters} onValueChange={(v) => { setStatus(v ?? "todos"); setPage(0); setSel(new Set()) }}>
-            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                {Object.entries(statusFilters).map(([value, label]) => <SelectItem key={value} value={value}>{label}</SelectItem>)}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
           {sel.size > 0 && (
             <Button variant="destructive" size="sm" className="self-center" onClick={() => { toast.add({ title: `${sel.size} cliente(s) arquivado(s)` }); setSel(new Set()) }}>Arquivar {sel.size}</Button>
           )}
@@ -681,38 +711,69 @@ function CustomersTable() {
 
         <div className="rounded-lg border">
           <Table>
-            <TableCaption className="pb-(--padding-lg)">Assinaturas ordenadas por MRR.</TableCaption>
+            <TableCaption className="pb-(--padding-lg)">Assinaturas da base. Ordene pelo nome ou pelo MRR; o Status também filtra.</TableCaption>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-10"><Checkbox checked={allSel} onCheckedChange={(c) => toggleAll(!!c)} aria-label="Selecionar todos" /></TableHead>
-                <TableHead>Cliente</TableHead>
+                <TableHead className="w-10"><Checkbox checked={allSel} indeterminate={!allSel && visible.some((r) => sel.has(r.id))} onCheckedChange={(c) => toggleAll(!!c)} aria-label="Selecionar todos" /></TableHead>
+                <Ordenavel texto="Cliente" dir={dirDe("name")} aoOrdenar={ordenar("name")} />
                 <TableHead>Plano</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">
-                  <Button variant="ghost" size="sm" className="font-bold" onClick={() => setAsc(!asc)}>MRR <ArrowUpDownIcon /></Button>
-                </TableHead>
-                <TableHead className="w-10" />
+                <Ordenavel
+                  texto="Status"
+                  dir={dirDe("status")}
+                  filtrado={status.length > 0}
+                  menu={
+                    <>
+                      <DropdownMenuItem onClick={() => setOrdem({ col: "status", dir: "asc" })}><ArrowUpIcon />Crescente</DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setOrdem({ col: "status", dir: "desc" })}><ArrowDownIcon />Decrescente</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuSub>
+                        <DropdownMenuSubTrigger><ListFilterIcon />Filtrar</DropdownMenuSubTrigger>
+                        <DropdownMenuSubContent>
+                          {todosStatus.map((s) => <DropdownMenuCheckboxItem key={s} checked={status.includes(s)} onCheckedChange={(v) => filtrar(s, v)}>{s}</DropdownMenuCheckboxItem>)}
+                        </DropdownMenuSubContent>
+                      </DropdownMenuSub>
+                    </>
+                  }
+                />
+                <TableHead>Renovação</TableHead>
+                <TableHead>Cobrança</TableHead>
+                <Ordenavel texto="MRR" direita dir={dirDe("mrr")} aoOrdenar={ordenar("mrr")} />
+                <TableHead className="w-10"><span className="sr-only">Ações</span></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {visible.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="h-24 text-center text-muted">Nenhum cliente encontrado.</TableCell></TableRow>
+                <TableRow><TableCell colSpan={8} className="h-24 text-center text-muted">Nenhum cliente encontrado.</TableCell></TableRow>
               )}
               {visible.map((c) => (
                 <TableRow key={c.id} data-state={sel.has(c.id) ? "selected" : undefined}>
                   <TableCell><Checkbox checked={sel.has(c.id)} onCheckedChange={(v) => toggle(c.id, !!v)} aria-label={`Selecionar ${c.name}`} /></TableCell>
                   <TableCell>
+                    {/* Duas linhas, da página Célula: o nome e, embaixo, o e-mail em text-muted. */}
                     <div className="flex items-center gap-(--gap-lg)">
                       <Avatar size="sm"><AvatarFallback>{initials(c.name)}</AvatarFallback></Avatar>
-                      <div><p className="font-bold">{c.name}</p><p className="text-body-xs text-muted">{c.email}</p></div>
+                      <span className="flex flex-col"><span>{c.name}</span><span className="text-muted">{c.email}</span></span>
                     </div>
                   </TableCell>
                   <TableCell>{c.plan}</TableCell>
                   <TableCell><Badge variant={statusVariant[c.status]}>{c.status}</Badge></TableCell>
+                  <TableCell>
+                    <Switch
+                      checked={renova.has(c.id)}
+                      disabled={c.status === "Cancelado"}
+                      onCheckedChange={(v) => setRenova((s) => { const n = new Set(s); if (v) n.add(c.id); else n.delete(c.id); return n })}
+                      aria-label={`Renovação automática de ${c.name}`}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    {c.status === "Inadimplente"
+                      ? <Button variant="outline" size="xs" onClick={() => toast.add({ title: "Cobrança enviada", description: c.name })}>Cobrar</Button>
+                      : <span className="text-muted">{c.status === "Cancelado" ? "—" : "Em dia"}</span>}
+                  </TableCell>
                   <TableCell className="text-right">{brl(c.mrr)}</TableCell>
                   <TableCell>
                     <DropdownMenu>
-                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Ações" />}><MoreHorizontalIcon /></DropdownMenuTrigger>
+                      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={`Ações de ${c.name}`} />}><MoreHorizontalIcon /></DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => toast.add({ title: "Abrindo perfil", description: c.name })}>Ver perfil</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => void copiar(c.email, "E-mail copiado")}>Copiar e-mail</DropdownMenuItem>
@@ -726,7 +787,7 @@ function CustomersTable() {
             </TableBody>
             <TableFooter>
               <TableRow>
-                <TableCell colSpan={4}>Total da página</TableCell>
+                <TableCell colSpan={6}>Total da página</TableCell>
                 <TableCell className="text-right">{brl(pageTotal)}</TableCell>
                 <TableCell />
               </TableRow>

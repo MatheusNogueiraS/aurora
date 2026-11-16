@@ -27,6 +27,11 @@ const products: { title: string; text: string; icon: LucideIcon }[] = [
   { title: "Poupança", text: "Guarde um pouco todo mês.", icon: PiggyBankIcon },
   { title: "Investimentos", text: "Renda fixa a partir de R$ 100.", icon: TrendingUpIcon },
 ]
+const empresas = [
+  ["Maquininha", "Receba no cartão e no Pix."],
+  ["Folha de pagamento", "Salários na data certa."],
+  ["Crédito PJ", "Capital de giro pelo app."],
+] as const
 const slides = [
   { label: "Cartão sem anuidade", from: "#fa6300", to: "#a43f04" },
   { label: "Conta para sua empresa", from: "#462a71", to: "#2d194b" },
@@ -65,9 +70,31 @@ function SiteNav() {
                     <NavigationMenuLink href="#institucional" className="items-start">
                       <p.icon className="mt-0.5 shrink-0" />
                       <span>
-                        <span className="block font-medium">{p.title}</span>
+                        <span className="block text-label-sm">{p.title}</span>
                         <span className="block text-muted">{p.text}</span>
                       </span>
+                    </NavigationMenuLink>
+                  </li>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          {/* O layout Destaque da página NavigationMenu: um link maior à esquerda e a lista ao lado. */}
+          <NavigationMenuItem>
+            <NavigationMenuTrigger>Empresas</NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[min(26rem,calc(100vw-3rem))] grid-cols-[.75fr_1fr] gap-(--gap-xs)">
+                <li className="row-span-3">
+                  <NavigationMenuLink href="#institucional" className="h-full flex-col items-start justify-end bg-muted/50 p-(--padding-2xl)">
+                    <span className="text-heading-sm">Conta PJ</span>
+                    <span className="text-muted">Tudo para receber e pagar num lugar só.</span>
+                  </NavigationMenuLink>
+                </li>
+                {empresas.map(([titulo, texto]) => (
+                  <li key={titulo}>
+                    <NavigationMenuLink href="#institucional" className="flex-col items-start gap-(--gap-2xs)">
+                      <span className="text-label-sm">{titulo}</span>
+                      <span className="text-muted">{texto}</span>
                     </NavigationMenuLink>
                   </li>
                 ))}
