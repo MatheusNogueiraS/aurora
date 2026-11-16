@@ -22,12 +22,11 @@ export type Icones = { esquerdo?: Icone; direito?: Icone }
 const variantes = { Pago: "outline", Pendente: "secondary", Atrasado: "destructive" } as const
 export type Status = keyof typeof variantes
 
-// O menu de ações do exemplo Actions do shadcn. `expandida` troca o menu por um botão com `aria-expanded`, para mostrar o estado sem abrir o menu.
-export function Acoes({ rotulo, expandida }: { rotulo: string; expandida?: boolean }) {
-  if (expandida) return <Button variant="ghost" size="icon-xs" aria-label={rotulo} aria-expanded><MoreHorizontalIcon /></Button>
+// O menu de ações do exemplo Actions do shadcn. O botão fica em 24 px para não aumentar a linha, e o ícone em 16 px, como no exemplo, para ser visto.
+export function Acoes({ rotulo }: { rotulo: string }) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={rotulo} />}><MoreHorizontalIcon /></DropdownMenuTrigger>
+      <DropdownMenuTrigger render={<Button variant="ghost" size="icon-xs" aria-label={rotulo} />}><MoreHorizontalIcon className="size-(--size-md)" /></DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem>Editar</DropdownMenuItem>
         <DropdownMenuItem>Duplicar</DropdownMenuItem>
@@ -143,12 +142,12 @@ const visiveis = (colunas: number) => [...outras.slice(0, colunas - 1), valor]
 export const tiposDeLinha = ["Header", "Body", "Footer"] as const
 export type TipoDeLinha = (typeof tiposDeLinha)[number]
 export type OpcoesDaLinha = {
-  tipo: TipoDeLinha; colunas: number; selecao: boolean; acoes: boolean; fatura?: Fatura; total?: number; expandida?: boolean
+  tipo: TipoDeLinha; colunas: number; selecao: boolean; acoes: boolean; fatura?: Fatura; total?: number
   selecionada?: boolean | "algumas"; aoSelecionar?: (v: boolean) => void
 }
 
 // Uma linha montada com as células da página Célula. `selecionada` no Header marca o "selecionar todas".
-export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], total = 0, expandida, selecionada = false, aoSelecionar }: OpcoesDaLinha) {
+export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], total = 0, selecionada = false, aoSelecionar }: OpcoesDaLinha) {
   const cols = visiveis(colunas)
   if (tipo === "Header") {
     return (
@@ -174,7 +173,7 @@ export function Linha({ tipo, colunas, selecao, acoes, fatura = faturas[0], tota
     <TableRow data-state={selecionada === true ? "selected" : undefined}>
       {selecao && <TableCell><Checkbox aria-label={`Selecionar ${fatura.id}`} checked={selecionada === true} onCheckedChange={(v) => aoSelecionar?.(v)} /></TableCell>}
       {cols.map((c) => <TableCell key={c.nome} className={"direita" in c ? "text-right" : undefined}>{c.celula(fatura)}</TableCell>)}
-      {acoes && <TableCell className="text-right"><Acoes rotulo={`Ações de ${fatura.id}`} expandida={expandida} /></TableCell>}
+      {acoes && <TableCell className="text-right"><Acoes rotulo={`Ações de ${fatura.id}`} /></TableCell>}
     </TableRow>
   )
 }
