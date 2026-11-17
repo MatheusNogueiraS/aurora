@@ -277,7 +277,7 @@ function Composer() {
   }
   return (
     <div className="flex h-full flex-col gap-(--gap-lg) overflow-auto p-(--padding-2xl)">
-      <AttachmentGroup>
+      <AttachmentGroup className="shrink-0">
         <Attachment state="uploading" size="sm">
           <AttachmentMedia><Spinner /></AttachmentMedia>
           <AttachmentContent>
