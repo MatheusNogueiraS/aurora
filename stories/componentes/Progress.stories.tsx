@@ -13,7 +13,7 @@ const meta = {
       {porcentagem && <ProgressValue />}
     </Progress>
   ),
-  parameters: pagina("Barra que mostra quanto de uma tarefa já foi feito, como um envio de arquivo. Não tem Size: a barra tem 12 px de altura, e a largura preenche o pai."),
+  parameters: pagina("Barra que mostra quanto de uma tarefa já foi feito, como um envio de arquivo. Não tem Size: a barra tem 8 px de altura, como o trilho do Slider, e a largura preenche o pai."),
   argTypes: {
     valor: { name: "Value", control: { type: "range", min: 0, max: 100, step: 1 }, description: "No código, `value`, de 0 a 100.", table: { category: "Conteúdo" } },
     rotulo: { name: "Rótulo", control: "boolean", description: "`ProgressLabel`, acima da barra, à esquerda.", table: { category: "Conteúdo" } },
