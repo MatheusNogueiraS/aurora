@@ -1,6 +1,6 @@
-# React + TypeScript + Vite + shadcn/ui
+# Aurora
 
-This is a template for a new Vite project with React, TypeScript, and shadcn/ui.
+Design system construído sobre o shadcn/ui (estilo `base-luma`), com React, TypeScript, Vite e Tailwind.
 
 ## Adding components
 

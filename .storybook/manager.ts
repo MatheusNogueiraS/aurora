@@ -4,7 +4,7 @@ import { create } from "storybook/theming/create"
 addons.setConfig({
   theme: create({
     base: "light",
-    brandTitle: "Design System",
+    brandTitle: "Aurora",
     colorPrimary: "#fa6300",
     colorSecondary: "#462a71",
   }),
