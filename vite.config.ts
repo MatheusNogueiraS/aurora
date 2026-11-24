@@ -11,6 +11,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, "index.html"),
         sandbox: resolve(import.meta.dirname, "sandbox/index.html"),
+        poc: resolve(import.meta.dirname, "sandbox/poc/index.html"),
       },
     },
   },
