@@ -38,11 +38,11 @@ const meta = {
   parameters: pagina("Junta botões e campos relacionados numa peça só: os cantos de dentro ficam retos e as bordas do meio somem. O visual dos botões continua sendo do `Button`; o grupo só os encosta."),
   argTypes: {
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation`. `vertical` empilha os botões.", table: { category: "Aparência" } },
-    variant: { name: "Type dos botões", control: "select", options: variantes, description: "`variant` de cada `Button`, não do grupo. Com `outline`, as bordas se juntam; nos outros, use o separador.", table: { category: "Aparência" } },
-    size: { name: "Size dos botões", control: "inline-radio", options: tamanhos, description: "`size` de cada `Button`. O grupo acompanha.", table: { category: "Aparência" } },
-    quantidade: { name: "Botões", control: { type: "range", min: 2, max: 4, step: 1 }, table: { category: "Conteúdo" } },
-    separador: { name: "Separador", control: "boolean", description: "`ButtonGroupSeparator` entre os botões: a linha que os separa quando eles não têm borda, como `secondary`.", table: { category: "Conteúdo" } },
-    texto: { name: "Texto", control: "boolean", description: "`ButtonGroupText` no começo: um rótulo com fundo `muted` colado no grupo.", table: { category: "Conteúdo" } },
+    variant: { name: "Type", control: "select", options: variantes, description: "`variant` de cada `Button`, não do grupo. Com `outline`, as bordas se juntam; nos outros, use o separador.", table: { category: "Aparência" } },
+    size: { name: "Size", control: "inline-radio", options: tamanhos, description: "`size` de cada `Button`. O grupo acompanha.", table: { category: "Aparência" } },
+    quantidade: { name: "Buttons", control: { type: "range", min: 2, max: 4, step: 1 }, table: { category: "Conteúdo" } },
+    separador: { name: "Separator", control: "boolean", description: "`ButtonGroupSeparator` entre os botões: a linha que os separa quando eles não têm borda, como `secondary`.", table: { category: "Conteúdo" } },
+    texto: { name: "Label", control: "boolean", description: "`ButtonGroupText` no começo: um rótulo com fundo `muted` colado no grupo.", table: { category: "Conteúdo" } },
   },
   args: base,
 } satisfies Meta<Controles>
