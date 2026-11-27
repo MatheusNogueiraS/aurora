@@ -24,8 +24,7 @@ const cartao = ({ size, imagem, titulo, descricao, acao, conteudo, slot, rodape,
       {descricao && <CardDescription>Cobrança mensal, cancele quando quiser.</CardDescription>}
       {acao && <CardAction><Button variant="link" size="sm">Ver detalhes</Button></CardAction>}
     </CardHeader>
-    {conteudo && <CardContent>Pix sem limite, 5 cartões virtuais e suporte por chat.</CardContent>}
-    {slot && <CardContent><Slot /></CardContent>}
+    {conteudo && <CardContent>{slot ? <Slot /> : "Pix sem limite, 5 cartões virtuais e suporte por chat."}</CardContent>}
     {rodape && <CardFooter className={cn("gap-(--gap-sm)", divisoria && "border-t")}><Button variant="outline" className="flex-1">Agora não</Button><Button className="flex-1">Assinar</Button></CardFooter>}
   </Card>
 )
@@ -38,14 +37,14 @@ const meta = {
   parameters: pagina("Superfície que agrupa um assunto: título, conteúdo e ações. A largura vem do pai. Cada parte que entra (`CardHeader`, `CardContent`, `CardFooter`) tem o mesmo recuo lateral.", "/fotos/capa.png"),
   argTypes: {
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, `size`. `sm` diminui o recuo e o espaço entre as partes.", table: { category: "Aparência" } },
-    imagem: { name: "Imagem", control: "boolean", description: "Uma `img` como primeiro filho ocupa o topo sem recuo e com os cantos arredondados.", table: { category: "Conteúdo" } },
-    titulo: { name: "Título", control: "text", description: "`CardTitle`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "boolean", description: "`CardDescription`, abaixo do título.", table: { category: "Conteúdo" } },
-    acao: { name: "Ação", control: "boolean", description: "`CardAction`, no canto de cima à direita do cabeçalho.", table: { category: "Conteúdo" } },
-    conteudo: { name: "Conteúdo", control: "boolean", description: "`CardContent`.", table: { category: "Conteúdo" } },
-    slot: { name: "Slot", control: "boolean", description: "Componentes deste tipo aceitam outros componentes dentro. Ligue para ver a região onde eles entram: um `CardContent` a mais, no fim do conteúdo; no Figma, é o slot.", table: { category: "Conteúdo" } },
-    rodape: { name: "Rodapé", control: "boolean", description: "`CardFooter`, com as ações.", table: { category: "Conteúdo" } },
-    divisoria: { name: "Divisória", control: "boolean", description: "A classe `border-t` no `CardFooter`: uma linha separa as ações do resto, e o rodapé ganha o recuo de cima.", if: { arg: "rodape" }, table: { category: "Conteúdo" } },
+    imagem: { name: "Image", control: "boolean", description: "Uma `img` como primeiro filho ocupa o topo sem recuo e com os cantos arredondados.", table: { category: "Conteúdo" } },
+    titulo: { name: "Title", control: "text", description: "`CardTitle`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`CardDescription`, abaixo do título.", table: { category: "Conteúdo" } },
+    acao: { name: "Action", control: "boolean", description: "`CardAction`, no canto de cima à direita do cabeçalho.", table: { category: "Conteúdo" } },
+    conteudo: { name: "Content", control: "boolean", description: "`CardContent`. Recebe o que o card vai mostrar: um texto ou outros componentes. No Figma, é o slot ↳ Content, com um texto como conteúdo padrão.", table: { category: "Conteúdo" } },
+    slot: { table: { disable: true } },
+    rodape: { name: "Footer", control: "boolean", description: "`CardFooter`, com as ações.", table: { category: "Conteúdo" } },
+    divisoria: { name: "Footer divider", control: "boolean", description: "A classe `border-t` no `CardFooter`: uma linha separa as ações do resto, e o rodapé ganha o recuo de cima.", if: { arg: "rodape" }, table: { category: "Conteúdo" } },
   },
   args: base,
 } satisfies Meta<Controles>
@@ -65,15 +64,15 @@ export const Tamanhos: Story = {
 }
 
 export const Conteudo: Story = {
-  name: "Conteúdo",
-  parameters: vitrine("Cada parte que entra muda o desenho: a ação divide o cabeçalho em duas colunas, a imagem ocupa o topo sem recuo, a divisória separa o rodapé e o slot marca onde entram outros componentes."),
+  name: "Partes",
+  parameters: vitrine("Cada parte que entra muda o desenho: Action divide o cabeçalho em duas colunas, Image ocupa o topo sem recuo, Footer divider separa o rodapé e ↳ Content recebe outros componentes no lugar do texto."),
   render: () => (
     <Opcoes larga>
-      <Opcao nome="Só cabeçalho"><div className="w-full">{cartao({ ...base, conteudo: false, rodape: false })}</div></Opcao>
-      <Opcao nome="Com ação"><div className="w-full">{cartao({ ...base, acao: true, rodape: false })}</div></Opcao>
-      <Opcao nome="Com imagem"><div className="w-full">{cartao({ ...base, imagem: true })}</div></Opcao>
-      <Opcao nome="Com divisória"><div className="w-full">{cartao({ ...base, divisoria: true })}</div></Opcao>
-      <Opcao nome="Com slot"><div className="w-full">{cartao({ ...base, slot: true })}</div></Opcao>
+      <Opcao nome="Content e Footer desligados"><div className="w-full">{cartao({ ...base, conteudo: false, rodape: false })}</div></Opcao>
+      <Opcao nome="Action"><div className="w-full">{cartao({ ...base, acao: true, rodape: false })}</div></Opcao>
+      <Opcao nome="Image"><div className="w-full">{cartao({ ...base, imagem: true })}</div></Opcao>
+      <Opcao nome="Footer divider"><div className="w-full">{cartao({ ...base, divisoria: true })}</div></Opcao>
+      <Opcao nome="↳ Content"><div className="w-full">{cartao({ ...base, slot: true })}</div></Opcao>
     </Opcoes>
   ),
 }

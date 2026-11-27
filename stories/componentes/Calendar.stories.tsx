@@ -22,17 +22,21 @@ type Botao = (typeof botoes)[number]
 const mes = new Date(2026, 10, 1)
 const dia = (d: number) => new Date(2026, 10, d)
 
-type Controles = { mode: Modo; captionLayout: Legenda; meses: number; foraDoMes: boolean; semanas: boolean; buttonVariant: Botao; fimDeSemana: boolean }
+type Controles = { mode: Modo; listaMes: boolean; listaAno: boolean; meses: number; foraDoMes: boolean; semanas: boolean; buttonVariant: Botao; fimDeSemana: boolean }
 
 // Cada calendário guarda a própria seleção; o modo decide o formato dela.
-function Calendario({ mode, captionLayout, meses, foraDoMes, semanas, buttonVariant, fimDeSemana }: Controles) {
+// As duas listas do Figma (Month dropdown e Year dropdown) viram o captionLayout do código.
+const legenda = (mesLista: boolean, anoLista: boolean): Exclude<Legenda, "label"> | undefined => (mesLista && anoLista ? "dropdown" : mesLista ? "dropdown-months" : anoLista ? "dropdown-years" : undefined)
+const listas: Record<Legenda, [boolean, boolean]> = { label: [false, false], dropdown: [true, true], "dropdown-months": [true, false], "dropdown-years": [false, true] }
+
+function Calendario({ mode, listaMes, listaAno, meses, foraDoMes, semanas, buttonVariant, fimDeSemana }: Controles) {
   const [um, setUm] = useState<Date | undefined>(dia(12))
   const [faixa, setFaixa] = useState<DateRange | undefined>({ from: dia(9), to: dia(13) })
   const [varios, setVarios] = useState<Date[] | undefined>([dia(5), dia(12), dia(19)])
   const comum = {
     locale: ptBR,
     defaultMonth: mes,
-    captionLayout: captionLayout === "label" ? undefined : captionLayout,
+    captionLayout: legenda(listaMes, listaAno),
     numberOfMonths: meses > 1 ? meses : undefined,
     showOutsideDays: foraDoMes ? undefined : false,
     showWeekNumber: semanas || undefined,
@@ -47,7 +51,7 @@ function Calendario({ mode, captionLayout, meses, foraDoMes, semanas, buttonVari
   return <Calendar {...comum} mode="single" selected={um} onSelect={setUm} />
 }
 
-const base: Controles = { mode: "single", captionLayout: "label", meses: 1, foraDoMes: true, semanas: false, buttonVariant: "ghost", fimDeSemana: false }
+const base: Controles = { mode: "single", listaMes: false, listaAno: false, meses: 1, foraDoMes: true, semanas: false, buttonVariant: "ghost", fimDeSemana: false }
 
 function SeletorDeData() {
   const [data, setData] = useState<Date | undefined>()
@@ -67,12 +71,13 @@ const meta = {
   parameters: pagina("Calendário para escolher um dia, um período ou vários dias. Usa o react-day-picker; a língua vem de `locale` (aqui, `ptBR` do date-fns). Os dias são botões `ghost`; o escolhido ganha o fundo `brand`. A página mostra sempre novembro de 2026."),
   argTypes: {
     mode: { name: "Mode", control: "inline-radio", options: modos, description: "No código, `mode`: um dia (`single`), um período (`range`, com o começo e o fim marcados e o meio em `muted`) ou vários dias (`multiple`).", table: { category: "Comportamento" } },
-    captionLayout: { name: "Caption layout", control: "inline-radio", options: legendas, description: "No código, `captionLayout`: o nome do mês (`label`) ou listas para trocar mês e ano.", table: { category: "Aparência" } },
-    meses: { name: "Meses", control: { type: "range", min: 1, max: 2, step: 1 }, description: "No código, `numberOfMonths`. Dois meses ficam lado a lado na tela larga.", table: { category: "Aparência" } },
-    foraDoMes: { name: "Dias de fora", control: "boolean", description: "`showOutsideDays` (ligado por padrão): os dias do mês anterior e do seguinte, apagados.", table: { category: "Aparência" } },
-    semanas: { name: "Número da semana", control: "boolean", description: "`showWeekNumber`: uma coluna com o número da semana no ano.", table: { category: "Aparência" } },
-    buttonVariant: { name: "Botões de navegação", control: "inline-radio", options: botoes, description: "`buttonVariant`: o Type do `Button` das setas de mês.", table: { category: "Aparência" } },
-    fimDeSemana: { name: "Dias desabilitados", control: "boolean", description: "`disabled` com `{ dayOfWeek: [0, 6] }`: sábados e domingos esmaecem e não se escolhem.", table: { category: "Estado" } },
+    listaMes: { name: "Month dropdown", control: "boolean", description: "Uma lista para trocar o mês. No código, é o `captionLayout`: com Month dropdown e Year dropdown, `dropdown`; só o mês, `dropdown-months`; só o ano, `dropdown-years`; sem nenhum, `label` (o padrão).", table: { category: "Aparência" } },
+    listaAno: { name: "Year dropdown", control: "boolean", description: "Uma lista para trocar o ano. Veja Month dropdown.", table: { category: "Aparência" } },
+    meses: { name: "Months", control: { type: "range", min: 1, max: 2, step: 1 }, description: "No código, `numberOfMonths`. Dois meses ficam lado a lado na tela larga.", table: { category: "Aparência" } },
+    foraDoMes: { name: "Outside days", control: "boolean", description: "`showOutsideDays` (ligado por padrão): os dias do mês anterior e do seguinte, apagados.", table: { category: "Aparência" } },
+    semanas: { name: "Week number", control: "boolean", description: "`showWeekNumber`: uma coluna com o número da semana no ano.", table: { category: "Aparência" } },
+    buttonVariant: { name: "Previous and Next", control: "inline-radio", options: botoes, description: "`buttonVariant`: o Type do `Button` das setas de mês. No Figma, é o Type do Button exposto.", table: { category: "Aparência" } },
+    fimDeSemana: { name: "Disabled days", control: "boolean", description: "`disabled` com `{ dayOfWeek: [0, 6] }`: sábados e domingos esmaecem e não se escolhem. No Figma, não é propriedade: marque os dias como Disabled no CalendarDay.", table: { category: "Estado" } },
   },
   args: base,
 } satisfies Meta<Controles>
@@ -90,8 +95,8 @@ export const Modos: Story = {
 
 export const Legendas: Story = {
   name: "Caption layout",
-  parameters: vitrine("No código, `captionLayout`. Sem a propriedade, o calendário é `label`. As listas ganham o visual do Select."),
-  render: () => <Opcoes larga>{legendas.map((l) => <Opcao key={l} nome={l}><Calendario {...base} captionLayout={l} /></Opcao>)}</Opcoes>,
+  parameters: vitrine("No código, `captionLayout`; no Figma, os booleans Month dropdown e Year dropdown. Sem a propriedade, o calendário é `label`."),
+  render: () => <Opcoes larga>{legendas.map((l) => <Opcao key={l} nome={l}><Calendario {...base} listaMes={listas[l][0]} listaAno={listas[l][1]} /></Opcao>)}</Opcoes>,
 }
 
 export const OutrasOpcoes: Story = {
