@@ -307,7 +307,7 @@ function Composer() {
         <InputGroupAddon align="block-end">
           <Button variant="ghost" size="icon-sm" aria-label="Anexar arquivo"><PaperclipIcon /></Button>
           <span className="hidden text-body-xs sm:inline">Enviar com <Kbd>Enter</Kbd></span>
-          <Button size="sm" className="ml-auto" onClick={send}><SendIcon /> Enviar</Button>
+          <Button size="xs" className="ml-auto" onClick={send}><SendIcon /> Enviar</Button>
         </InputGroupAddon>
       </InputGroup>
     </div>

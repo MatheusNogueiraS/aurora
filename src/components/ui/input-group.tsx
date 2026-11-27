@@ -21,10 +21,10 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-// Ao lado do Textarea, o addon vai para o topo e se centra na primeira linha (20 px, a partir do padding-md do campo);
-// um ícone sozinho (16 px) desce o que falta e um botão sobe. O botão do grupo é sempre o Button sm ou icon-sm (32 px).
+// Ao lado do Textarea, o addon vai para o topo com a altura da primeira linha (padding-md + 20 px + padding-md = 40 px)
+// e centra o que tiver dentro: ícone, texto, Button xs ou icon-sm ficam no meio da primeira linha.
 const noTopoDoTextarea =
-  "group-has-[>textarea]/input-group:self-start group-has-[>textarea]/input-group:pt-(--padding-md) group-has-[>textarea]/input-group:has-[>svg:only-child]:pt-(--padding-lg) group-has-[>textarea]/input-group:has-[>button]:pt-(--padding-2xs)"
+  "group-has-[>textarea]/input-group:self-start group-has-[>textarea]/input-group:h-10 group-has-[>textarea]/input-group:py-0"
 
 const inputGroupAddonVariants = cva(
   "flex h-auto cursor-text items-center justify-center gap-(--gap-sm) py-(--padding-sm) text-label-sm text-muted select-none group-data-[disabled=true]/input-group:opacity-50 **:data-[slot=kbd]:rounded-4xl **:data-[slot=kbd]:bg-page/10 **:data-[slot=kbd]:px-(--padding-xs) [&>svg:not([class*='size-'])]:size-(--size-md)",

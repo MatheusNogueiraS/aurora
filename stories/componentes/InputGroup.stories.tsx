@@ -12,7 +12,7 @@ const posicoes = ["inline-start", "inline-end", "block-start", "block-end"] as c
 type Posicao = (typeof posicoes)[number]
 const conteudos = ["Ícone", "Texto", "Botão", "Kbd", "Spinner"] as const
 type Conteudo = (typeof conteudos)[number]
-const tamanhosBotao = ["sm", "icon-sm"] as const
+const tamanhosBotao = ["xs", "icon-sm"] as const
 type TamanhoBotao = (typeof tamanhosBotao)[number]
 const interacoes: Interacao[] = ["Default", "Focus"]
 const controle = "[data-slot=input-group-control]"
@@ -20,8 +20,8 @@ const controle = "[data-slot=input-group-control]"
 type Controles = { campo: "Input" | "Textarea"; align: Posicao; conteudo: Conteudo; tamanhoBotao: TamanhoBotao; estado: Interacao; disabled: boolean; invalido: boolean }
 
 // O Storybook não passa o Size do botão quando o addon não é um botão, por isso o padrão aqui.
-const addon = (conteudo: Conteudo, tamanhoBotao: TamanhoBotao = "sm") => {
-  if (conteudo === "Botão") return tamanhoBotao === "icon-sm" ? <Button variant="ghost" size="icon-sm" aria-label="Copiar"><CopyIcon /></Button> : <Button variant="ghost" size="sm">Buscar</Button>
+const addon = (conteudo: Conteudo, tamanhoBotao: TamanhoBotao = "xs") => {
+  if (conteudo === "Botão") return tamanhoBotao === "icon-sm" ? <Button variant="ghost" size="icon-sm" aria-label="Copiar"><CopyIcon /></Button> : <Button variant="ghost" size="xs">Buscar</Button>
   return { Ícone: <SearchIcon />, Texto: <InputGroupText>https://</InputGroupText>, Kbd: <Kbd>⌘K</Kbd>, Spinner: <Spinner /> }[conteudo]
 }
 
@@ -34,7 +34,7 @@ const grupo = ({ campo, align, conteudo, tamanhoBotao, disabled, invalido }: Omi
   </InputGroup>
 )
 
-const base = { campo: "Input" as const, align: "inline-start" as Posicao, conteudo: "Ícone" as Conteudo, tamanhoBotao: "sm" as TamanhoBotao, disabled: false, invalido: false }
+const base = { campo: "Input" as const, align: "inline-start" as Posicao, conteudo: "Ícone" as Conteudo, tamanhoBotao: "xs" as TamanhoBotao, disabled: false, invalido: false }
 
 const meta = {
   title: "Componentes/InputGroup",
@@ -44,7 +44,7 @@ const meta = {
     campo: { name: "Campo", control: "inline-radio", options: ["Input", "Textarea"], description: "`InputGroupInput` ou `InputGroupTextarea`. Com o Textarea, o grupo cresce em altura.", table: { category: "Conteúdo" } },
     align: { name: "Align do addon", control: "inline-radio", options: posicoes, description: "No código, `align` no `InputGroupAddon`. `inline-start` e `inline-end` ficam nos lados; `block-start` e `block-end`, numa linha em cima ou embaixo.", table: { category: "Aparência" } },
     conteudo: { name: "Addon", control: "inline-radio", options: conteudos, description: "O que vai dentro do `InputGroupAddon`: um ícone, `InputGroupText`, um `Button`, um `Kbd` (ganha fundo translúcido) ou um `Spinner`.", table: { category: "Conteúdo" } },
-    tamanhoBotao: { name: "Size do botão", control: "inline-radio", options: tamanhosBotao, description: "O botão é o `Button` do Aurora, com `variant=\"ghost\"`: `sm` com texto ou `icon-sm` só com ícone, 32 px no campo de 36 px.", if: { arg: "conteudo", eq: "Botão" }, table: { category: "Aparência" } },
+    tamanhoBotao: { name: "Size do botão", control: "inline-radio", options: tamanhosBotao, description: "O botão é o `Button` do Aurora, com `variant=\"ghost\"`: `xs` com texto (24 px) ou `icon-sm` só com ícone (32 px, no campo de 36 px).", if: { arg: "conteudo", eq: "Botão" }, table: { category: "Aparência" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. Com o campo focado, o grupo inteiro ganha a borda e o anel.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled` no campo e `data-disabled` no grupo, que esmaece os addons.", table: { category: "Estado" } },
     invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` no campo: o grupo ganha a borda de erro.", table: { category: "Estado" } },
@@ -74,7 +74,7 @@ export const Addons: Story = {
 
 export const TamanhosBotao: Story = {
   name: "Size do botão",
-  parameters: vitrine("O botão é o `Button` do Aurora: `sm` com texto e `icon-sm` só com ícone."),
+  parameters: vitrine("O botão é o `Button` do Aurora: `xs` com texto e `icon-sm` só com ícone."),
   render: () => <Opcoes larga>{tamanhosBotao.map((t) => <Opcao key={t} nome={t}><div className="w-full">{grupo({ ...base, conteudo: "Botão", tamanhoBotao: t, align: "inline-end" })}</div></Opcao>)}</Opcoes>,
 }
 
