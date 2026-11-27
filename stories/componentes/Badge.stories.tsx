@@ -3,26 +3,26 @@ import { ArrowRightIcon, ArrowUpRightIcon, CheckIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Spinner } from "@/components/ui/spinner"
-import { Opcao, Opcoes, Simula, pagina, simulaEstado, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, pagina, vitrine } from "./Opcoes"
 
 const variantes = ["default", "secondary", "destructive", "outline", "ghost", "link"] as const
-const interacoes: Interacao[] = ["Default", "Hover"]
+// Um State só, como no Figma: Invalid é um estado, não um controle à parte.
+const estados = ["Default", "Hover", "Invalid"] as const
 
-type Controles = { variant: (typeof variantes)[number]; texto: string; estado: Interacao; invalido: boolean }
+type Controles = { variant: (typeof variantes)[number]; texto: string; estado: (typeof estados)[number] }
 
 const meta = {
   title: "Componentes/Badge",
-  render: ({ variant, texto, invalido }) => (
-    <Badge variant={variant === "default" ? undefined : variant} aria-invalid={invalido || undefined}>{texto}</Badge>
+  render: ({ variant, texto, estado }) => (
+    <Badge variant={variant === "default" ? undefined : variant} aria-invalid={estado === "Invalid" || undefined}>{texto}</Badge>
   ),
   parameters: pagina("Etiqueta curta para uma situação ou categoria, como \"Pago\" ou \"Novo\"."),
   argTypes: {
     variant: { name: "Type", control: "select", options: variantes, description: "No código, a propriedade `variant`.", table: { category: "Aparência" } },
-    texto: { name: "Texto", control: "text", table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado: só `ghost` e `link` têm hover. Nos outros tipos, o hover e o foco só existem quando o Badge vira link.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },
+    texto: { name: "Text", control: "text", table: { category: "Conteúdo" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Hover é simulado: só `ghost` e `link` têm hover; nos outros tipos, o hover e o foco só existem quando o Badge vira link. Invalid é `aria-invalid`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { variant: "default", texto: "Novo", estado: "Default", invalido: false },
+  args: { variant: "default", texto: "Novo", estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta
@@ -30,7 +30,7 @@ type Story = StoryObj<typeof meta>
 
 export const Padrao: Story = {
   name: "Padrão",
-  decorators: [simulaEstado],
+  decorators: [(Historia, { args }) => <Simula estado={args.estado === "Hover" ? "Hover" : "Default"}><Historia /></Simula>],
 }
 
 export const Tipos: Story = {

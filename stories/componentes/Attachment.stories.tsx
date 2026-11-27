@@ -14,9 +14,9 @@ const estados = ["idle", "uploading", "processing", "error", "ready", "success"]
 type Estado = (typeof estados)[number]
 const descricoes: Record<Estado, string> = { idle: "Solte o arquivo aqui", uploading: "Enviando... 45%", processing: "Lendo o arquivo...", error: "Arquivo grande demais", ready: "PDF · 2 MB", success: "Documento aprovado" }
 
-type Controles = { size: Tamanho; orientation: Orientacao; state: Estado; imagem: boolean; conteudo: boolean; remover: boolean; gatilho: boolean; interacao?: Interacao }
+type Controles = { size: Tamanho; orientation: Orientacao; state: Estado; imagem: boolean; conteudo: boolean; descricao: boolean; remover: boolean; gatilho: boolean; interacao?: Interacao }
 
-const anexo = ({ size, orientation, state, imagem, conteudo, remover, gatilho }: Controles) => {
+const anexo = ({ size, orientation, state, imagem, conteudo, descricao, remover, gatilho }: Controles) => {
   const carregando = state === "uploading" || state === "processing"
   const Icone = state === "error" ? TriangleAlertIcon : state === "success" ? CircleCheckIcon : state === "idle" ? UploadIcon : FileTextIcon
   return (
@@ -28,7 +28,7 @@ const anexo = ({ size, orientation, state, imagem, conteudo, remover, gatilho }:
       {conteudo && (
         <AttachmentContent>
           <AttachmentTitle>{state === "idle" ? "Anexar arquivo" : "contrato.pdf"}</AttachmentTitle>
-          <AttachmentDescription>{descricoes[state]}</AttachmentDescription>
+          {descricao && <AttachmentDescription>{descricoes[state]}</AttachmentDescription>}
         </AttachmentContent>
       )}
       {remover && <AttachmentActions><AttachmentAction aria-label="Remover"><XIcon /></AttachmentAction></AttachmentActions>}
@@ -36,7 +36,7 @@ const anexo = ({ size, orientation, state, imagem, conteudo, remover, gatilho }:
   )
 }
 
-const base: Controles = { size: "default", orientation: "horizontal", state: "ready", imagem: false, conteudo: true, remover: true, gatilho: false }
+const base: Controles = { size: "default", orientation: "horizontal", state: "ready", imagem: false, conteudo: true, descricao: true, remover: true, gatilho: false }
 
 const meta = {
   title: "Componentes/Attachment",
@@ -46,11 +46,12 @@ const meta = {
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, `size`: diminui o recuo, a mídia e o texto.", table: { category: "Aparência" } },
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation`. `vertical` põe a mídia em cima, ocupando a largura, e a ação no canto.", table: { category: "Aparência" } },
     state: { name: "State", control: "inline-radio", options: estados, description: "No código, `state`. `idle` tracejado, à espera do arquivo; `uploading` e `processing` brilham o nome e esmaecem a imagem; `error` pinta a borda, a mídia e a descrição de vermelho; `ready` é o padrão, neutro; `success` pinta a borda e a mídia de verde, para o que foi concluído.", table: { category: "Estado" } },
-    imagem: { name: "Imagem", control: "boolean", description: "`variant=\"image\"` no `AttachmentMedia`, para uma miniatura no lugar do ícone. Durante o envio, o Spinner fica no lugar do ícone.", table: { category: "Conteúdo" } },
-    conteudo: { name: "Nome e detalhes", control: "boolean", description: "`AttachmentContent` com `AttachmentTitle` e `AttachmentDescription`. Sem ele, sobra só a mídia.", table: { category: "Conteúdo" } },
-    remover: { name: "Remover", control: "boolean", description: "`AttachmentActions` com um `AttachmentAction`: um `Button` `ghost` `icon-xs`.", table: { category: "Conteúdo" } },
-    gatilho: { name: "Clicável", control: "boolean", description: "`AttachmentTrigger`: um botão que cobre o anexo inteiro, para abrir o arquivo. Com ele, o anexo ganha hover.", table: { category: "Elemento" } },
-    interacao: { name: "Interação", control: "inline-radio", options: ["Default", "Hover"], description: "Simulado. O hover pinta o fundo de `muted/50`; o foco do teclado no gatilho ganha o anel.", if: { arg: "gatilho" }, table: { category: "Elemento" } },
+    imagem: { name: "Image", control: "boolean", description: "`variant=\"image\"` no `AttachmentMedia`, para uma miniatura no lugar do ícone. Durante o envio, o Spinner fica no lugar do ícone.", table: { category: "Conteúdo" } },
+    conteudo: { name: "Title", control: "boolean", description: "`AttachmentContent` com o `AttachmentTitle`, o nome do arquivo. Sem ele, sobra só a mídia.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`AttachmentDescription`, abaixo do nome: o detalhe, que muda com o `state`.", if: { arg: "conteudo" }, table: { category: "Conteúdo" } },
+    remover: { name: "Remove", control: "boolean", description: "`AttachmentActions` com um `AttachmentAction`: um `Button` `ghost` `icon-xs`.", table: { category: "Conteúdo" } },
+    gatilho: { name: "Clickable", control: "boolean", description: "`AttachmentTrigger`: um botão que cobre o anexo inteiro, para abrir o arquivo. Com ele, o anexo ganha hover.", table: { category: "Elemento" } },
+    interacao: { name: "Interaction", control: "inline-radio", options: ["Default", "Hover"], description: "Simulado. O hover pinta o fundo de `muted/50`; o foco do teclado no gatilho ganha o anel.", if: { arg: "gatilho" }, table: { category: "Elemento" } },
   },
   args: { ...base, interacao: "Default" },
 } satisfies Meta<Controles>

@@ -32,10 +32,10 @@ const meta = {
   parameters: pagina("Foto de uma pessoa, ou as iniciais dela quando não há foto."),
   argTypes: {
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, a propriedade `size`.", table: { category: "Aparência" } },
-    imagem: { name: "Imagem", control: "boolean", description: "`AvatarImage`. Sem ela, ou enquanto ela carrega, aparece o `AvatarFallback`.", table: { category: "Conteúdo" } },
-    iniciais: { name: "Iniciais", control: "text", description: "Texto do `AvatarFallback`.", table: { category: "Conteúdo" } },
-    selo: { name: "Selo", control: "select", options: selos, description: "`AvatarBadge`, no canto de baixo: um ponto ou um ícone. No `sm`, o ícone some e fica o ponto.", table: { category: "Conteúdo" } },
-    cor: { name: "Cor do selo", control: "inline-radio", options: Object.keys(cores), description: "Sem classe, o selo é `brand`. As outras cores vêm do `className`, como `bg-success`.", if: { arg: "selo", neq: "Nenhum" }, table: { category: "Aparência" } },
+    imagem: { name: "Image", control: "boolean", description: "`AvatarImage`. Sem ela, ou enquanto ela carrega, aparece o `AvatarFallback`.", table: { category: "Conteúdo" } },
+    iniciais: { name: "Initials", control: "text", description: "Texto do `AvatarFallback`.", table: { category: "Conteúdo" } },
+    selo: { name: "Badge", control: "select", options: selos, description: "`AvatarBadge`, no canto de baixo: um ponto ou um ícone. No `sm`, o ícone some e fica o ponto.", table: { category: "Conteúdo" } },
+    cor: { name: "Badge color", control: "inline-radio", options: Object.keys(cores), description: "Sem classe, o selo é `brand`. As outras cores vêm do `className`, como `bg-success`.", if: { arg: "selo", neq: "Nenhum" }, table: { category: "Aparência" } },
   },
   args: { size: "default", imagem: true, iniciais: "AS", selo: "Nenhum", cor: "brand" },
 } satisfies Meta<Controles>

@@ -44,10 +44,10 @@ const meta = {
   argTypes: {
     aberto: { name: "Open", control: "boolean", description: "No código, `open` no `AlertDialog` (ou `defaultOpen`).", table: { category: "Estado" } },
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, `size` no `AlertDialogContent`. `sm` é estreito, centraliza o texto e divide o rodapé em duas colunas iguais.", table: { category: "Aparência" } },
-    midia: { name: "Mídia", control: "boolean", description: "`AlertDialogMedia`: um ícone num círculo `muted`. No `default`, ele fica à esquerda do texto; no `sm`, em cima.", table: { category: "Conteúdo" } },
-    titulo: { name: "Título", control: "text", description: "`AlertDialogTitle`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "text", description: "`AlertDialogDescription`.", table: { category: "Conteúdo" } },
-    destrutiva: { name: "Ação destrutiva", control: "boolean", description: "`variant=\"destructive\"` no `AlertDialogAction`, que é um `Button` e aceita os Types dele. Na mídia, as classes `bg-danger-subtle text-danger`.", table: { category: "Conteúdo" } },
+    midia: { name: "Media", control: "boolean", description: "`AlertDialogMedia`: um ícone num círculo `muted`. No `default`, ele fica à esquerda do texto; no `sm`, em cima.", table: { category: "Conteúdo" } },
+    titulo: { name: "Title", control: "text", description: "`AlertDialogTitle`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "text", description: "`AlertDialogDescription`.", table: { category: "Conteúdo" } },
+    destrutiva: { name: "Action destructive", control: "boolean", description: "`variant=\"destructive\"` no `AlertDialogAction`, que é um `Button` e aceita os Types dele. Na mídia, as classes `bg-danger-subtle text-danger`.", table: { category: "Conteúdo" } },
   },
   args: { aberto: false, ...base },
 } satisfies Meta<Controles>
