@@ -73,7 +73,6 @@ import { Input } from "@/components/ui/input"
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupInput,
   InputGroupText,
   InputGroupTextarea,
@@ -206,7 +205,7 @@ function TransferForm({ amount, setAmount, erro, tipo, setTipo }: { amount: stri
                   <InputGroupAddon><InputGroupText>R$</InputGroupText></InputGroupAddon>
                   <InputGroupInput id="amount" value={amount} aria-invalid={invalid} onChange={(e) => setAmount(e.target.value)} inputMode="decimal" />
                   <InputGroupAddon align="inline-end">
-                    <InputGroupButton onClick={() => setAmount("12.480,00")}>Máximo</InputGroupButton>
+                    <Button variant="ghost" size="sm" onClick={() => setAmount("12.480,00")}>Máximo</Button>
                   </InputGroupAddon>
                 </InputGroup>
                 {invalid ? <FieldError>{erro}</FieldError> : <FieldDescription>Saldo disponível: {brl(SALDO)}.</FieldDescription>}

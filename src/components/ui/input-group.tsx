@@ -4,7 +4,6 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 
@@ -22,13 +21,18 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
+// Ao lado do Textarea, o addon vai para o topo e se centra na primeira linha (20 px, a partir do padding-md do campo);
+// um ícone sozinho (16 px) desce o que falta e um botão sobe. O botão do grupo é sempre o Button sm ou icon-sm (32 px).
+const noTopoDoTextarea =
+  "group-has-[>textarea]/input-group:self-start group-has-[>textarea]/input-group:pt-(--padding-md) group-has-[>textarea]/input-group:has-[>svg:only-child]:pt-(--padding-lg) group-has-[>textarea]/input-group:has-[>button]:pt-(--padding-2xs)"
+
 const inputGroupAddonVariants = cva(
   "flex h-auto cursor-text items-center justify-center gap-(--gap-sm) py-(--padding-sm) text-label-sm text-muted select-none group-data-[disabled=true]/input-group:opacity-50 **:data-[slot=kbd]:rounded-4xl **:data-[slot=kbd]:bg-page/10 **:data-[slot=kbd]:px-(--padding-xs) [&>svg:not([class*='size-'])]:size-(--size-md)",
   {
     variants: {
       align: {
-        "inline-start": "order-first pl-(--padding-lg) has-[>button]:-ml-(--gap-2xs) has-[>kbd]:-ml-(--gap-2xs)",
-        "inline-end": "order-last pr-(--padding-lg) has-[>button]:-mr-(--gap-2xs) has-[>kbd]:-mr-(--gap-2xs)",
+        "inline-start": `order-first pl-(--padding-lg) has-[>button]:-ml-(--gap-2xs) has-[>kbd]:-ml-(--gap-2xs) ${noTopoDoTextarea}`,
+        "inline-end": `order-last pr-(--padding-lg) has-[>button]:-mr-(--gap-2xs) has-[>kbd]:-mr-(--gap-2xs) ${noTopoDoTextarea}`,
         "block-start":
           "order-first w-full justify-start px-(--padding-lg) pt-(--padding-lg) group-has-[>input]/input-group:pt-(--padding-xl) [.border-b]:pb-(--padding-xl)",
         "block-end":
@@ -56,46 +60,8 @@ function InputGroupAddon({
         if ((e.target as HTMLElement).closest("button")) {
           return
         }
-        e.currentTarget.parentElement?.querySelector("input")?.focus()
+        e.currentTarget.parentElement?.querySelector<HTMLElement>("[data-slot=input-group-control]")?.focus()
       }}
-      {...props}
-    />
-  )
-}
-
-const inputGroupButtonVariants = cva(
-  "flex items-center gap-(--gap-sm) rounded-5xl text-label-sm shadow-none",
-  {
-    variants: {
-      size: {
-        xs: "h-6 gap-(--gap-2xs) rounded-2xl px-(--padding-xs) [&>svg:not([class*='size-'])]:size-(--size-sm)",
-        sm: "",
-        "icon-xs": "size-(--size-xl) rounded-2xl p-0 has-[>svg]:p-0",
-        "icon-sm": "size-(--size-2xl) p-0 has-[>svg]:p-0",
-      },
-    },
-    defaultVariants: {
-      size: "xs",
-    },
-  }
-)
-
-function InputGroupButton({
-  className,
-  type = "button",
-  variant = "ghost",
-  size = "xs",
-  ...props
-}: Omit<React.ComponentProps<typeof Button>, "size" | "type"> &
-  VariantProps<typeof inputGroupButtonVariants> & {
-    type?: "button" | "submit" | "reset"
-  }) {
-  return (
-    <Button
-      type={type}
-      data-size={size}
-      variant={variant}
-      className={cn(inputGroupButtonVariants({ size }), className)}
       {...props}
     />
   )
@@ -148,7 +114,6 @@ function InputGroupTextarea({
 export {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupText,
   InputGroupInput,
   InputGroupTextarea,
