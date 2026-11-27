@@ -24,8 +24,10 @@ Um componente por vez. Cada um passa pelos passos abaixo.
 | **Parte opcional** | Boolean com o nome da parte (`Icon left`, `Prefix`, `Button`). |
 | **Ícone** | Boolean + `INSTANCE_SWAP` logo abaixo (`↳ Icon left`), com `preferredValues` nos ícones da página `↳ Ícones` e, quando o código aceita, Spinner e Kbd. A instância do ícone fica exposta. |
 | **Texto** | Propriedade `TEXT` ligada à camada. Texto opcional: boolean + `↳ <Nome>` de texto. |
+| **Rótulo** | Peça que nomeia ou indica algo (como o ButtonGroupText) se chama **Label** (boolean `Label` + texto `↳ Label`) e traz "Label" como texto padrão. |
 | **Região livre** | `SLOT` (com boolean quando é opcional). |
 | **Dependência** | Peças que existem no DS (Button, Separator, ícones, SelectItem…) entram como **instância exposta** do componente original. Nunca redesenhar. |
+| **State único** | Como no Button: um só `State`, com todos os estados que o componente tem (Default, Hover, Focus, Pressed, Expanded, Disabled, Invalid). Nunca Invalid ou Disabled como eixo ou boolean separado. |
 | **Estado aberto** | Aberto e fechado é a variante `Open` (false/true), separada do `State` (Default, Hover, Focus, Disabled). Nada de "Open" como valor de State. |
 | **Protótipo** | O que abre e fecha no código também abre e fecha no Figma: interação "On click → Change to" entre `Open=false` e `Open=true` de cada State que aceita clique (não no Disabled), com Smart animate. Use `setReactionsAsync`. |
 | **Separador** | Divisória é sempre o Separator do Aurora. Nada de separador próprio (SelectSeparator, FieldSeparator); com texto no meio, é composição: Separator, texto e Separator. |
