@@ -46,7 +46,7 @@ import {
   ContextMenuTrigger,
 } from "@/components/ui/context-menu"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from "@/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupTextarea } from "@/components/ui/input-group"
 import {
   Item,
   ItemActions,
@@ -305,9 +305,9 @@ function Composer() {
       <InputGroup>
         <InputGroupTextarea value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send() } }} placeholder="Escreva uma resposta…" aria-label="Resposta" />
         <InputGroupAddon align="block-end">
-          <InputGroupButton size="icon-xs" aria-label="Anexar arquivo"><PaperclipIcon /></InputGroupButton>
+          <Button variant="ghost" size="icon-sm" aria-label="Anexar arquivo"><PaperclipIcon /></Button>
           <span className="hidden text-body-xs sm:inline">Enviar com <Kbd>Enter</Kbd></span>
-          <InputGroupButton variant="default" size="xs" className="ml-auto" onClick={send}><SendIcon /> Enviar</InputGroupButton>
+          <Button size="sm" className="ml-auto" onClick={send}><SendIcon /> Enviar</Button>
         </InputGroupAddon>
       </InputGroup>
     </div>

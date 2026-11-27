@@ -22,7 +22,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxInput, ComboboxItem, ComboboxList } from "@/components/ui/combobox"
 import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText } from "@/components/ui/input-group"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Spinner } from "@/components/ui/spinner"
@@ -65,7 +65,7 @@ export function Identificacao() {
               <InputGroup>
                 <InputGroupInput id="cpf" required inputMode="numeric" value={a.cliente.cpf} onChange={(e) => set((s) => ({ ...s, cliente: { ...s.cliente, cpf: e.target.value } }))} />
                 <InputGroupAddon align="inline-end">
-                  <InputGroupButton size="icon-xs" aria-label="Copiar CPF" onClick={() => copiar(a.cliente.cpf, "CPF copiado")}><CopyIcon /></InputGroupButton>
+                  <Button variant="ghost" size="icon-sm" aria-label="Copiar CPF" onClick={() => copiar(a.cliente.cpf, "CPF copiado")}><CopyIcon /></Button>
                 </InputGroupAddon>
               </InputGroup>
             </Field>
@@ -272,7 +272,7 @@ function CampoData({ id, label, valor, onValor, className }: { id: string; label
             onInvalid={(e) => setErro(e.currentTarget.validity.valueMissing ? "Campo obrigatório." : e.currentTarget.validity.customError ? "Essa data não existe." : "Use o formato dd/mm/aaaa.")}
           />
           <InputGroupAddon align="inline-end">
-            <PopoverTrigger render={<InputGroupButton size="icon-xs" aria-label="Abrir calendário" />}><CalendarIcon /></PopoverTrigger>
+            <PopoverTrigger render={<Button variant="ghost" size="icon-sm" aria-label="Abrir calendário" />}><CalendarIcon /></PopoverTrigger>
           </InputGroupAddon>
         </InputGroup>
         <PopoverContent className="w-auto p-0" align="end" initialFocus={() => !digitando.current} finalFocus={campo}>

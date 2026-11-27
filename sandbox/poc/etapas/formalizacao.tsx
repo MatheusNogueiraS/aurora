@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel, FieldLegend, FieldSet } from "@/components/ui/field"
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { toast } from "@/components/ui/toast"
@@ -110,7 +110,7 @@ function LinkFormalizacao() {
                 <InputGroup>
                   <InputGroupInput id="link-formalizacao" readOnly value={LINK} />
                   <InputGroupAddon align="inline-end">
-                    <InputGroupButton size="icon-xs" aria-label="Copiar link" onClick={copiarLink}><CopyIcon /></InputGroupButton>
+                    <Button variant="ghost" size="icon-sm" aria-label="Copiar link" onClick={copiarLink}><CopyIcon /></Button>
                   </InputGroupAddon>
                 </InputGroup>
               </Field>
