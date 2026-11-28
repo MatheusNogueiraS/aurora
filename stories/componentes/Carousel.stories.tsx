@@ -63,9 +63,9 @@ const meta = {
   argTypes: {
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation`. `vertical` passa os slides para cima e para baixo; a altura vem da classe no `CarouselContent`.", table: { category: "Aparência" } },
     largura: { name: "Slides por vez", control: "inline-radio", options: Object.keys(larguras), description: "Classe `basis-1/2` ou `basis-1/3` no `CarouselItem`, com `opts={{ align: \"start\" }}`.", table: { category: "Aparência" } },
-    justo: { name: "Espaço menor", control: "boolean", description: "O exemplo Spacing do shadcn: o espaço entre os slides é o recuo do `CarouselItem` (`pl-*`), desfeito por uma margem negativa igual no `CarouselContent` (`-ml-*`).", table: { category: "Aparência" } },
+    justo: { name: "Spacing compact", control: "boolean", description: "O exemplo Spacing do shadcn: o espaço entre os slides é o recuo do `CarouselItem` (`pl-*`), desfeito por uma margem negativa igual no `CarouselContent` (`-ml-*`).", table: { category: "Aparência" } },
     loop: { name: "Loop", control: "boolean", description: "`opts={{ loop: true }}`: depois do último, volta ao primeiro, e as setas nunca desligam.", table: { category: "Comportamento" } },
-    setas: { name: "Setas", control: "boolean", description: "`CarouselPrevious` e `CarouselNext`. No começo e no fim, a seta do lado sem slide fica desabilitada.", table: { category: "Conteúdo" } },
+    setas: { name: "Arrows", control: "boolean", description: "`CarouselPrevious` e `CarouselNext`. No começo e no fim, a seta do lado sem slide fica desabilitada.", table: { category: "Conteúdo" } },
   },
   args: base,
 } satisfies Meta<Controles>

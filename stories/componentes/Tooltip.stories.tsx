@@ -25,8 +25,8 @@ const meta = {
   parameters: pagina("Dica curta que aparece ao passar o mouse ou focar um elemento, como um botão só com ícone. Não tem Type nem Size. Na amostra, ele fica sempre aberto."),
   argTypes: {
     side: { name: "Side", control: "inline-radio", options: lados, description: "No código, `side` do `TooltipContent`. `inline-start` e `inline-end` seguem a direção do texto: em português, são `left` e `right`.", table: { category: "Aparência" } },
-    texto: { name: "Texto", control: "text", table: { category: "Conteúdo" } },
-    atalho: { name: "Atalho", control: "boolean", description: "Um `Kbd` dentro do Tooltip: ele ganha fundo translúcido, e o Tooltip encolhe o padding da direita.", table: { category: "Conteúdo" } },
+    texto: { name: "Text", control: "text", table: { category: "Conteúdo" } },
+    atalho: { name: "Shortcut", control: "boolean", description: "Um `Kbd` dentro do Tooltip: ele ganha fundo translúcido, e o Tooltip encolhe o padding da direita.", table: { category: "Conteúdo" } },
   },
   args: { side: "top", texto: "Salvar alterações", atalho: false },
 } satisfies Meta<Controles>

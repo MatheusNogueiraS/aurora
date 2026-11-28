@@ -35,11 +35,11 @@ const meta = {
   parameters: pagina("Aviso fixo na página, que chama a atenção sem interromper, como uma mudança salva ou um erro. Não tem Size: a largura preenche o pai."),
   argTypes: {
     variant: { name: "Type", control: "select", options: variantes, description: "No código, a propriedade `variant`. O `default` fica no fundo da superfície. Os outros tipos usam um fundo discreto da cor e o texto e o ícone na cor cheia, que contrasta com ele nos dois temas: `bg-danger-subtle` com `text-danger`, `bg-warning-subtle` com `text-warning` e `bg-success-subtle` com `text-success`.", table: { category: "Aparência" } },
-    icone: { name: "Ícone", control: "select", options: ["Nenhum", ...Object.keys(icones)], description: "Qualquer ícone como primeiro filho abre uma coluna à esquerda do texto e pega a cor do Type.", table: { category: "Conteúdo" } },
-    titulo: { name: "Título", control: "text", description: "`AlertTitle`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "boolean", description: "`AlertDescription`, abaixo do título.", table: { category: "Conteúdo" } },
-    textoDescricao: { name: "Texto da descrição", control: "text", if: { arg: "descricao" }, table: { category: "Conteúdo" } },
-    acao: { name: "Ação", control: "boolean", description: "`AlertAction`, no canto de cima à direita. O texto abre espaço para ela.", table: { category: "Conteúdo" } },
+    icone: { name: "Icon", control: "select", options: ["Nenhum", ...Object.keys(icones)], description: "Qualquer ícone como primeiro filho abre uma coluna à esquerda do texto e pega a cor do Type.", table: { category: "Conteúdo" } },
+    titulo: { name: "Title", control: "text", description: "`AlertTitle`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`AlertDescription`, abaixo do título.", table: { category: "Conteúdo" } },
+    textoDescricao: { name: "↳ Description", control: "text", if: { arg: "descricao" }, table: { category: "Conteúdo" } },
+    acao: { name: "Action", control: "boolean", description: "`AlertAction`, no canto de cima à direita. O texto abre espaço para ela.", table: { category: "Conteúdo" } },
   },
   args: { variant: "default", icone: "InfoIcon", titulo: "Pagamento agendado", descricao: true, textoDescricao: "O Pix sai amanhã às 9h.", acao: false },
 } satisfies Meta<Controles>

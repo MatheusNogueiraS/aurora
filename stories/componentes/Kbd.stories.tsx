@@ -34,8 +34,8 @@ const meta = {
   parameters: pagina("Mostra uma tecla do teclado, como num atalho. Não tem Type, Size nem State."),
   argTypes: {
     tecla: { name: "Tecla", control: "select", options: Object.keys(TECLAS), description: "No código, a tecla é o conteúdo do Kbd: qualquer texto ou ícone. A lista traz as mais comuns.", if: { arg: "livre", truthy: false }, table: { category: "Conteúdo" } },
-    livre: { name: "Letra ou texto", control: "boolean", description: "Troca a lista por um campo para escrever a tecla, como uma letra.", table: { category: "Conteúdo" } },
-    texto: { name: "Texto", control: "text", if: { arg: "livre" }, table: { category: "Conteúdo" } },
+    livre: { name: "Custom key", control: "boolean", description: "Troca a lista por um campo para escrever a tecla, como uma letra.", table: { category: "Conteúdo" } },
+    texto: { name: "Text", control: "text", if: { arg: "livre" }, table: { category: "Conteúdo" } },
   },
   args: { tecla: "Ctrl", livre: false, texto: "K" },
 } satisfies Meta<Controles>

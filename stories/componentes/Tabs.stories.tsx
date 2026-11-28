@@ -37,7 +37,7 @@ const meta = {
   argTypes: {
     variant: { name: "Type", control: "inline-radio", options: variantes, description: "No código, `variant` do `TabsList`.", table: { category: "Aparência" } },
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation` do `Tabs`. Na vertical, as abas ficam em coluna, ao lado do conteúdo.", table: { category: "Aparência" } },
-    icone: { name: "Ícone", control: "boolean", description: "O atributo `data-icon` reduz o padding do lado do ícone.", table: { category: "Conteúdo" } },
+    icone: { name: "Icon", control: "boolean", description: "O atributo `data-icon` reduz o padding do lado do ícone.", table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, na aba Boleto. Hover só muda a aba que não está ativa.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled` na aba Boleto: impede a troca e esmaece.", table: { category: "Estado" } },
   },

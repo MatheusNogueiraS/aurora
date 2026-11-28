@@ -71,19 +71,19 @@ const base = { icones: true, atalhos: true, grupos: true, desabilitado: false, m
 
 const meta = {
   title: "Componentes/Command",
-  // O que se digita na amostra atualiza o controle Busca.
+  // O que se digita na amostra atualiza o controle Search.
   render: function Amostra({ busca, ...args }) {
     const [, atualizar] = useArgs<Controles>()
     return paleta(args, busca, (v) => atualizar({ busca: v }))
   },
   parameters: pagina("Lista de comandos com busca, que filtra enquanto se digita e se navega pelas setas. Fica na página, como aqui, ou dentro de uma janela (`CommandDialog`), a paleta de comandos aberta por um atalho. A largura preenche o pai."),
   argTypes: {
-    busca: { name: "Busca", control: "text", description: "O texto do `CommandInput`. O que não combina some; sem nada, aparece o `CommandEmpty`.", table: { category: "Conteúdo" } },
-    icones: { name: "Ícones", control: "boolean", description: "Um ícone antes do texto do `CommandItem`.", table: { category: "Conteúdo" } },
+    busca: { name: "Search", control: "text", description: "O texto do `CommandInput`. O que não combina some; sem nada, aparece o `CommandEmpty`.", table: { category: "Conteúdo" } },
+    icones: { name: "Icon", control: "boolean", description: "Um ícone antes do texto do `CommandItem`.", table: { category: "Conteúdo" } },
     atalhos: { name: "Atalhos", control: "boolean", description: "`CommandShortcut`, no fim do item.", table: { category: "Conteúdo" } },
     grupos: { name: "Grupos", control: "boolean", description: "`heading` no `CommandGroup`: o título do grupo. Entre os grupos, `CommandSeparator`.", table: { category: "Conteúdo" } },
-    desabilitado: { name: "Item desabilitado", control: "boolean", description: "`disabled` em Calculadora: esmaece e é pulado pelas setas.", table: { category: "Estado" } },
-    marcado: { name: "Item marcado", control: "boolean", description: "`data-checked` em Calculadora: mostra o ✓ no fim (some quando o item tem atalho).", table: { category: "Estado" } },
+    desabilitado: { name: "Item disabled", control: "boolean", description: "`disabled` em Calculadora: esmaece e é pulado pelas setas.", table: { category: "Estado" } },
+    marcado: { name: "Item checked", control: "boolean", description: "`data-checked` em Calculadora: mostra o ✓ no fim (some quando o item tem atalho).", table: { category: "Estado" } },
   },
   args: { busca: "", ...base },
 } satisfies Meta<Controles>

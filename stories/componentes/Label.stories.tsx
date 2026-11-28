@@ -10,7 +10,7 @@ const meta = {
   render: ({ texto }) => <Label htmlFor="label-campo">{texto}</Label>,
   parameters: pagina("Nome de um campo de formulário. O `htmlFor` recebe o `id` do campo: clicar no nome foca o campo (ou marca o Checkbox, o Switch e o Radio), e o leitor de tela lê o nome junto com ele. Na amostra, clique no nome e o cursor vai para o campo abaixo. Para texto solto, sem campo, use os estilos de tipografia, e não o Label."),
   argTypes: {
-    texto: { name: "Texto", control: "text", table: { category: "Conteúdo" } },
+    texto: { name: "Text", control: "text", table: { category: "Conteúdo" } },
   },
   args: { texto: "Nome" },
 } satisfies Meta<{ texto: string }>

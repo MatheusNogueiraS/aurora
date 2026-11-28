@@ -49,10 +49,10 @@ const meta = {
   parameters: pagina("Aviso rápido no canto de baixo da tela, que some sozinho, como a confirmação de um envio. O `Toaster` fica uma vez na raiz do app, e qualquer parte dispara um aviso com `toast.add()`. Vários se empilham; ao passar o mouse, eles se abrem em lista. Na amostra, o botão dispara um toast com o que está nos controles."),
   argTypes: {
     tipo: { name: "Type", control: "select", options: tipos, description: "No código, `type` em `toast.add()`. Cada tipo ganha um ícone à esquerda; `loading` gira, como no `toast.promise()`, que troca de tipo quando a tarefa termina.", table: { category: "Aparência" } },
-    titulo: { name: "Título", control: "text", description: "`title`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "boolean", description: "`description`, abaixo do título, em cor apagada.", table: { category: "Conteúdo" } },
-    acao: { name: "Ação", control: "boolean", description: "`actionProps`: um botão `outline` pequeno antes do X.", table: { category: "Conteúdo" } },
-    duracao: { name: "Duração", control: { type: "range", min: 0, max: 10, step: 1 }, description: "`timeout`, em milissegundos (aqui, em segundos). Com 0, o toast só fecha pelo X.", table: { category: "Comportamento" } },
+    titulo: { name: "Title", control: "text", description: "`title`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`description`, abaixo do título, em cor apagada.", table: { category: "Conteúdo" } },
+    acao: { name: "Action", control: "boolean", description: "`actionProps`: um botão `outline` pequeno antes do X.", table: { category: "Conteúdo" } },
+    duracao: { name: "Duration", control: { type: "range", min: 0, max: 10, step: 1 }, description: "`timeout`, em milissegundos (aqui, em segundos). Com 0, o toast só fecha pelo X.", table: { category: "Comportamento" } },
   },
   args: base,
 } satisfies Meta<Controles>

@@ -91,7 +91,7 @@ const meta = {
     submenu: { name: "Submenu", control: "boolean", description: "`MenubarSub`, com `MenubarSubTrigger` e `MenubarSubContent`.", table: { category: "Conteúdo" } },
     marcaveis: { name: "Checkbox e Radio", control: "boolean", description: "Os menus Exibir, com `MenubarCheckboxItem`, e Perfis, com `MenubarRadioItem`. Nos dois, a marca fica à esquerda, e o item normal pode receber `inset` para alinhar.", table: { category: "Conteúdo" } },
     destrutivo: { name: "Item destrutivo", control: "boolean", description: "`variant=\"destructive\"` no último item de Arquivo.", table: { category: "Conteúdo" } },
-    desabilitado: { name: "Item desabilitado", control: "boolean", description: "`disabled` em Janela anônima.", table: { category: "Estado" } },
+    desabilitado: { name: "Item disabled", control: "boolean", description: "`disabled` em Janela anônima.", table: { category: "Estado" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, no primeiro nome. Com o menu aberto, o nome fica com o mesmo fundo do hover.", table: { category: "Estado" } },
   },
   args: { ...base, estado: "Default" },

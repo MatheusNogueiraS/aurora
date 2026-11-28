@@ -46,8 +46,8 @@ const meta = {
   argTypes: {
     variant: { name: "Type", control: "inline-radio", options: variantes, description: "No código, a propriedade `variant`.", table: { category: "Aparência" } },
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, a propriedade `size`.", table: { category: "Aparência" } },
-    texto: { name: "Texto", control: "text", description: "Some com **Só ícone**.", if: { arg: "soIcone", truthy: false }, table: { category: "Conteúdo" } },
-    soIcone: { name: "Só ícone", control: "boolean", description: "Esconde o texto.", table: { category: "Conteúdo" } },
+    texto: { name: "Text", control: "text", description: "Some com **Icon only**.", if: { arg: "soIcone", truthy: false }, table: { category: "Conteúdo" } },
+    soIcone: { name: "Icon only", control: "boolean", description: "Esconde o texto.", table: { category: "Conteúdo" } },
     selecionado: { name: "Selected", control: "boolean", description: "No código, `pressed` (ou `defaultPressed`, quando o próprio Toggle guarda o valor).", table: { category: "Estado" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado: quem aplica é o navegador. O Toggle não muda ao ser clicado (Pressed), só ao ficar selecionado.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a ação e esmaece.", table: { category: "Estado" } },
