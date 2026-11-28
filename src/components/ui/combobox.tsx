@@ -212,18 +212,34 @@ function ComboboxSeparator({
 
 function ComboboxChips({
   className,
+  children,
+  showTrigger = true,
   ...props
 }: React.ComponentPropsWithRef<typeof ComboboxPrimitive.Chips> &
-  ComboboxPrimitive.Chips.Props) {
+  ComboboxPrimitive.Chips.Props & {
+    showTrigger?: boolean
+  }) {
   return (
     <ComboboxPrimitive.Chips
       data-slot="combobox-chips"
       className={cn(
-        "flex min-h-9 flex-wrap items-center gap-(--gap-xs) rounded-4xl border-sm border-transparent bg-control/50 bg-clip-padding px-(--padding-lg) py-(--padding-xs) text-body-sm transition-[color,box-shadow,background-color] focus-within:border-focus focus-within:ring-xl focus-within:ring-focus-subtle has-aria-invalid:border-invalid has-aria-invalid:ring-xl has-aria-invalid:ring-danger-subtle has-data-[slot=combobox-chip]:px-(--padding-xs)",
+        "flex min-h-9 items-center gap-(--gap-xs) rounded-4xl border-sm border-transparent bg-control/50 bg-clip-padding px-(--padding-lg) py-(--padding-xs) text-body-sm transition-[color,box-shadow,background-color] focus-within:border-focus focus-within:ring-xl focus-within:ring-focus-subtle has-aria-invalid:border-invalid has-aria-invalid:ring-xl has-aria-invalid:ring-danger-subtle has-data-[slot=combobox-chip]:px-(--padding-xs)",
         className
       )}
       {...props}
-    />
+    >
+      <div className="no-scrollbar scroll-fade-x -m-(--padding-2xs) flex min-w-0 flex-1 snap-x snap-mandatory scroll-px-(--padding-2xs) items-center gap-(--gap-xs) overflow-x-auto p-(--padding-2xs) *:snap-start *:data-[slot=combobox-chip-input]:snap-end">
+        {children}
+      </div>
+      {showTrigger && (
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          render={<ComboboxTrigger />}
+          className="-my-(--padding-xs) data-pressed:bg-transparent"
+        />
+      )}
+    </ComboboxPrimitive.Chips>
   )
 }
 
