@@ -4,16 +4,17 @@ import { useArgs } from "storybook/preview-api"
 
 import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine } from "./Opcoes"
 
 const tamanhos = ["sm", "default"] as const
 type Tamanho = (typeof tamanhos)[number]
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 const formas = { pix: "Pix", boleto: "Boleto", cartao: "Cartão de crédito" } as const
 type Forma = keyof typeof formas
 const icones = { pix: QrCodeIcon, boleto: BanknoteIcon, cartao: CreditCardIcon }
 
-type Controles = { aberto: boolean; size: Tamanho; valor: Forma | "Nenhum"; grupos: boolean; icones: boolean; alinhar: boolean; side?: "bottom" | "top"; itemDesabilitado: boolean; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { aberto: boolean; size: Tamanho; valor: Forma | "Nenhum"; grupos: boolean; icones: boolean; alinhar: boolean; side?: "bottom" | "top"; itemDesabilitado: boolean; estado: (typeof estados)[number] }
 
 const opcoes = ({ grupos, icones: comIcone, itemDesabilitado }: Pick<Controles, "grupos" | "icones" | "itemDesabilitado">) => {
   const item = (f: Forma) => {
@@ -31,7 +32,7 @@ const opcoes = ({ grupos, icones: comIcone, itemDesabilitado }: Pick<Controles, 
   )
 }
 
-const selecao = (args: Omit<Controles, "aberto" | "estado">, extra?: { aberto?: boolean; aoAbrir?: (o: boolean) => void; aoMudar?: (v: Forma | null) => void; id?: string }) => (
+const selecao = (args: Omit<Controles, "aberto" | "estado"> & { disabled?: boolean; invalido?: boolean }, extra?: { aberto?: boolean; aoAbrir?: (o: boolean) => void; aoMudar?: (v: Forma | null) => void; id?: string }) => (
   <Select
     items={formas}
     value={extra?.aoMudar ? (args.valor === "Nenhum" ? null : args.valor) : undefined}
@@ -49,28 +50,26 @@ const selecao = (args: Omit<Controles, "aberto" | "estado">, extra?: { aberto?: 
   </Select>
 )
 
-const base = { size: "default" as Tamanho, valor: "Nenhum" as const, grupos: false, icones: false, alinhar: true, itemDesabilitado: false, disabled: false, invalido: false }
+const base = { size: "default" as Tamanho, valor: "Nenhum" as const, grupos: false, icones: false, alinhar: true, itemDesabilitado: false }
 
 const meta = {
   title: "Componentes/Select",
   // Abrir, fechar e escolher na amostra atualiza os controles Open e Valor.
   render: function Amostra({ aberto, ...args }) {
     const [, atualizar] = useArgs<Controles>()
-    return selecao(args, { aberto, aoAbrir: (o) => atualizar({ aberto: o }), aoMudar: (v) => atualizar({ valor: v ?? "Nenhum" }) })
+    return selecao({ ...args, disabled: args.estado === "Disabled", invalido: args.estado === "Invalid" }, { aberto, aoAbrir: (o) => atualizar({ aberto: o }), aoMudar: (v) => atualizar({ valor: v ?? "Nenhum" }) })
   },
   parameters: pagina("Escolhe uma opção numa lista que abre por um botão, como a forma de pagamento. Para listas longas com busca, use o Combobox. Na amostra, o botão ou o controle **Open** abre a lista, que bloqueia a página até fechar; as opções abertas embaixo rodam no próprio quadro."),
   argTypes: {
     aberto: { name: "Open", control: "boolean", description: "No código, `open` no `Select` (ou `defaultOpen`).", table: { category: "Estado" } },
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, `size` no `SelectTrigger`: 32 px (`sm`) ou 36 px (`default`) de altura. A largura vem da classe, como `w-56`.", table: { category: "Aparência" } },
     valor: { name: "Value", control: "select", options: ["Nenhum", ...Object.keys(formas)], description: "No código, `value` (ou `defaultValue`). Sem valor, o `SelectValue` mostra o `placeholder` em cor apagada. A propriedade `items` do `Select` liga cada valor ao texto que aparece no botão.", table: { category: "Conteúdo" } },
-    grupos: { name: "Grupos", control: "boolean", description: "`SelectGroup` com `SelectLabel`, separados por `SelectSeparator`.", table: { category: "Conteúdo" } },
+    grupos: { name: "Groups", control: "boolean", description: "`SelectGroup` com `SelectLabel`, separados por `SelectSeparator`.", table: { category: "Conteúdo" } },
     icones: { name: "Icon", control: "boolean", description: "Um ícone antes do texto do `SelectItem`. O botão mostra só o texto, que vem de `items`.", table: { category: "Conteúdo" } },
     alinhar: { name: "Align item with trigger", control: "boolean", description: "`alignItemWithTrigger` no `SelectContent`. Ligado, a lista abre com a opção escolhida em cima do botão; desligado, abre embaixo dele, como um menu.", table: { category: "Comportamento" } },
     side: { name: "Side", control: "inline-radio", options: ["bottom", "top"], description: "No código, `side` no `SelectContent`: embaixo ou em cima do botão. Só vale com **Align item with trigger** desligado.", if: { arg: "alinhar", truthy: false }, table: { category: "Comportamento" } },
     itemDesabilitado: { name: "Item disabled", control: "boolean", description: "`disabled` no `SelectItem` do Boleto.", table: { category: "Estado" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Select não tem hover no código.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` no `Select`: o botão esmaece e não abre.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` no `SelectTrigger`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado (o Select não tem hover no código). Disabled é `disabled` no `Select`: o botão esmaece e não abre. Invalid é `aria-invalid` no `SelectTrigger`: borda de erro.", table: { category: "Estado" } },
   },
   args: { aberto: false, ...base, side: "bottom", estado: "Default" },
 } satisfies Meta<Controles>

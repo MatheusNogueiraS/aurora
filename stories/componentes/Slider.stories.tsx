@@ -7,29 +7,30 @@ import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from
 const orientacoes = ["horizontal", "vertical"] as const
 type Orientacao = (typeof orientacoes)[number]
 const interacoes: Interacao[] = ["Default", "Hover", "Focus"]
+// Um State só, como no Figma: Disabled é um estado, não um controle à parte.
+const estados = [...interacoes, "Disabled"] as const
 const pino = "[data-slot=slider-thumb]"
 // Um número por pino: o Slider desenha um pino para cada valor.
 const valores = { 1: [50], 2: [25, 75], 3: [10, 40, 70] } as const
 type Pinos = keyof typeof valores
 
-type Controles = { orientation: Orientacao; pinos: Pinos; estado: Interacao; disabled: boolean }
+type Controles = { orientation: Orientacao; pinos: Pinos; estado: (typeof estados)[number] }
 
 // O Slider preenche o pai no sentido da orientação: a moldura dá esse tamanho.
 const moldura = (orientacao: Orientacao, slider: ReactNode) => <div className={orientacao === "vertical" ? "h-40" : "w-full min-w-48"}>{slider}</div>
 
 const meta = {
   title: "Componentes/Slider",
-  render: ({ orientation, pinos, disabled }) => (
-    <Slider key={pinos} defaultValue={[...valores[pinos]]} orientation={orientation === "horizontal" ? undefined : orientation} disabled={disabled || undefined} aria-label="Volume" />
+  render: ({ orientation, pinos, estado }) => (
+    <Slider key={pinos} defaultValue={[...valores[pinos]]} orientation={orientation === "horizontal" ? undefined : orientation} disabled={estado === "Disabled" || undefined} aria-label="Volume" />
   ),
   parameters: pagina("Escolhe um número, ou uma faixa entre números, arrastando um pino. Não tem Size: a trilha tem 8 px de espessura e o comprimento preenche o pai."),
   argTypes: {
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation`.", table: { category: "Aparência" } },
     pinos: { name: "Thumbs", control: "inline-radio", options: [1, 2, 3], description: "Quantos números o `value` (ou `defaultValue`) recebe, como `[25, 75]`. A trilha pinta do primeiro ao último pino.", table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, no primeiro pino.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a mudança e esmaece.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Hover e Focus são simulados, no primeiro pino. Disabled é `disabled`: impede a mudança e esmaece.", table: { category: "Estado" } },
   },
-  args: { orientation: "horizontal", pinos: 1, estado: "Default", disabled: false },
+  args: { orientation: "horizontal", pinos: 1, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

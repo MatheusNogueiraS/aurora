@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react-vite"
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { Opcao, Opcoes, Simula, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
 
 const interacoes: Interacao[] = ["Default", "Hover", "Focus"]
+// Um State só, como no Figma: Disabled é um estado, não um controle à parte.
+const estados = [...interacoes, "Disabled"] as const
 const gatilho = "[data-slot=accordion-trigger]"
 
-type Controles = { multiple: boolean; disabled: boolean; estado: Interacao }
+type Controles = { multiple: boolean; estado: (typeof estados)[number] }
 
 const perguntas = [
   ["pix", "Como pagar com Pix?", "Escaneie o QR Code no app do seu banco. O pagamento cai na hora."],
@@ -27,14 +29,13 @@ const lista = ({ multiple = false, disabled = false, abertos = ["pix"] }: { mult
 
 const meta = {
   title: "Componentes/Accordion",
-  render: ({ multiple, disabled }) => lista({ multiple, disabled }),
+  render: ({ multiple, estado }) => lista({ multiple, disabled: estado === "Disabled" }),
   parameters: pagina("Lista de perguntas que abrem e fecham a resposta. Não tem Type nem Size: a largura preenche o pai. No estilo do projeto (luma), a borda já vem no Accordion, então o modelo Borders do shadcn é o próprio Basic daqui, e o modelo Card fica de fora: ele pede um Accordion sem borda dentro do Card, que o código não tem."),
   argTypes: {
     multiple: { name: "Multiple", control: "boolean", description: "`multiple`: várias perguntas abertas ao mesmo tempo. Sem ele, abrir uma fecha a outra.", table: { category: "Comportamento" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` na segunda pergunta: ela não abre e esmaece.", table: { category: "Estado" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, na primeira pergunta.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Hover e Focus são simulados, na primeira pergunta. Disabled é `disabled` na segunda pergunta: ela não abre e esmaece.", table: { category: "Estado" } },
   },
-  args: { multiple: false, disabled: false, estado: "Default" },
+  args: { multiple: false, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta
@@ -42,7 +43,7 @@ type Story = StoryObj<typeof meta>
 
 export const Padrao: Story = {
   name: "Padrão",
-  decorators: [(Historia, { args }) => <div className="w-96"><Simula estado={args.estado} so={gatilho}><Historia /></Simula></div>],
+  decorators: [(Historia, { args }) => <div className="w-96"><Simula estado={estadoDe(args)} so={gatilho}><Historia /></Simula></div>],
 }
 
 export const Modelos: Story = {

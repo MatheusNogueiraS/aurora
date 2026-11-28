@@ -9,10 +9,14 @@ const interacoes: Interacao[] = ["Default", "Hover", "Focus"]
 const tamanhos = ["icon-xs", "icon-sm", "icon", "icon-lg"] as const
 type Tamanho = (typeof tamanhos)[number]
 
-type Controles = { atual: number; total: number; size: Tamanho; reticencias: boolean; setas: boolean; textoSetas: boolean; estado: Interacao }
+// O Type do Figma: com reticências, simples (números e setas) ou só as setas.
+const tipos = ["ellipsis", "simple", "arrows"] as const
+
+type Controles = { tipo: (typeof tipos)[number]; atual: number; total: number; size: Tamanho; textoSetas: boolean; estado: Interacao }
+type Dados = { atual: number; total: number; size?: Tamanho; reticencias: boolean; setas: boolean; textoSetas: boolean }
 
 // Mostra a página atual com uma vizinha de cada lado; com reticências, o resto vira "…".
-const paginacao = ({ atual: pedida, total, size = "icon", reticencias, setas, textoSetas }: Omit<Controles, "estado" | "size"> & { size?: Tamanho }) => {
+const paginacao = ({ atual: pedida, total, size = "icon", reticencias, setas, textoSetas }: Dados) => {
   // O controle de página vai até 10; a atual não passa do total.
   const atual = Math.min(pedida, total)
   const paginas = Array.from({ length: total }, (_, i) => i + 1)
@@ -35,18 +39,17 @@ const base = { atual: 2, total: 3, reticencias: false, setas: true, textoSetas: 
 
 const meta = {
   title: "Componentes/Pagination",
-  render: (args) => paginacao(args),
-  parameters: pagina("Navega entre páginas de uma lista longa. Cada número é um link com o visual do `Button`: `ghost`, e `outline` na página atual. Não tem Type."),
+  render: ({ tipo, total, ...args }) => paginacao({ ...args, reticencias: tipo === "ellipsis", setas: true, total: tipo === "arrows" ? 0 : total }),
+  parameters: pagina("Navega entre páginas de uma lista longa. Cada número é um link com o visual do `Button`: `ghost`, e `outline` na página atual. O Type não é uma propriedade do código: é a montagem, com `PaginationEllipsis` (ellipsis), só números e setas (simple) ou só `PaginationPrevious` e `PaginationNext` (arrows)."),
   argTypes: {
-    atual: { name: "Current page", control: { type: "range", min: 1, max: 10, step: 1 }, description: "`isActive` no `PaginationLink` da página atual: ele vira `outline` e ganha `aria-current=\"page\"`.", table: { category: "Conteúdo" } },
-    total: { name: "Total pages", control: { type: "range", min: 1, max: 10, step: 1 }, table: { category: "Conteúdo" } },
+    tipo: { name: "Type", control: "inline-radio", options: tipos, description: "`ellipsis` troca as páginas longe da atual por `PaginationEllipsis`; `simple` mostra todos os números; `arrows` deixa só as setas.", table: { category: "Conteúdo" } },
+    atual: { name: "Current page", control: { type: "range", min: 1, max: 10, step: 1 }, description: "`isActive` no `PaginationLink` da página atual: ele vira `outline` e ganha `aria-current=\"page\"`.", if: { arg: "tipo", neq: "arrows" }, table: { category: "Conteúdo" } },
+    total: { name: "Total pages", control: { type: "range", min: 1, max: 10, step: 1 }, if: { arg: "tipo", neq: "arrows" }, table: { category: "Conteúdo" } },
     size: { name: "Size", control: "inline-radio", options: tamanhos, description: "No código, `size` no `PaginationLink`, o mesmo do Button: 24, 32, 36 (o padrão, `icon`) ou 40 px. As setas usam o `default` do Button.", table: { category: "Aparência" } },
-    reticencias: { name: "Ellipsis", control: "boolean", description: "`PaginationEllipsis` no lugar das páginas longe da atual.", table: { category: "Conteúdo" } },
-    setas: { name: "Arrows", control: "boolean", description: "`PaginationPrevious` e `PaginationNext`.", table: { category: "Conteúdo" } },
-    textoSetas: { name: "Arrow text", control: "boolean", description: "A propriedade `text` (em inglês, Previous e Next, se faltar). Na tela estreita, o texto some e fica só a seta.", if: { arg: "setas" }, table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, no primeiro número.", table: { category: "Estado" } },
+    textoSetas: { name: "Arrow text", control: "boolean", description: "A propriedade `text` (em inglês, Previous e Next, se faltar). Na tela estreita, o texto some e fica só a seta.", table: { category: "Conteúdo" } },
+    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, no primeiro número.", if: { arg: "tipo", neq: "arrows" }, table: { category: "Estado" } },
   },
-  args: { ...base, size: "icon", estado: "Default" },
+  args: { tipo: "simple", atual: base.atual, total: base.total, textoSetas: base.textoSetas, size: "icon", estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta
@@ -75,13 +78,14 @@ export const Tamanhos: Story = {
 }
 
 export const Conteudo: Story = {
-  name: "Conteúdo",
-  parameters: vitrine("Os exemplos do shadcn: a paginação completa, com reticências, e a simples, só com as setas."),
+  name: "Type",
+  parameters: vitrine("Os exemplos do shadcn, com os nomes do Type no Figma: a paginação com reticências, a simples e a só com as setas. Sem o texto, as setas ficam só com o ícone."),
   render: () => (
     <Opcoes larga>
-      <Opcao nome="Com reticências">{paginacao({ ...base, atual: 5, total: 10, reticencias: true })}</Opcao>
-      <Opcao nome="Só setas">{paginacao({ ...base, total: 0, textoSetas: true })}</Opcao>
-      <Opcao nome="Setas sem texto">{paginacao({ ...base, textoSetas: false })}</Opcao>
+      <Opcao nome="ellipsis">{paginacao({ ...base, atual: 5, total: 10, reticencias: true })}</Opcao>
+      <Opcao nome="simple">{paginacao(base)}</Opcao>
+      <Opcao nome="arrows">{paginacao({ ...base, total: 0, textoSetas: true })}</Opcao>
+      <Opcao nome="Arrow text off">{paginacao({ ...base, textoSetas: false })}</Opcao>
     </Opcoes>
   ),
 }

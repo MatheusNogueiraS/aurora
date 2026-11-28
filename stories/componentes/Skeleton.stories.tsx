@@ -4,11 +4,18 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Opcao, Opcoes, pagina, vitrine } from "./Opcoes"
 
+// O Shape do Figma: no código, a forma vem do `className`.
+const formas = { rectangle: "h-4 w-48", circle: "size-(--size-4xl) rounded-full" } as const
+
 const meta = {
   title: "Componentes/Skeleton",
-  render: () => <Skeleton className="h-4 w-48" />,
+  render: ({ forma }) => <Skeleton className={formas[forma]} />,
   parameters: pagina("Ocupa o lugar de um conteúdo que ainda está carregando, dentro de qualquer componente. Não tem Type, Size nem State: a forma vem do `className`, com a altura e a largura do que ele substitui."),
-} satisfies Meta
+  argTypes: {
+    forma: { name: "Shape", control: "inline-radio", options: Object.keys(formas), description: "Não é propriedade: `rectangle` é uma altura e uma largura, como `h-4 w-48`; `circle` ganha `rounded-full`, como uma foto.", table: { category: "Aparência" } },
+  },
+  args: { forma: "rectangle" },
+} satisfies Meta<{ forma: keyof typeof formas }>
 
 export default meta
 type Story = StoryObj<typeof meta>

@@ -12,7 +12,11 @@ type Divisao = keyof typeof divisoes
 const padroes = { "Só números": REGEXP_ONLY_DIGITS, "Números e letras": REGEXP_ONLY_DIGITS_AND_CHARS } as const
 type Padrao = keyof typeof padroes
 
-type Controles = { divisao: Divisao; padrao: Padrao; valor: string; disabled: boolean; invalido: boolean }
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte. O Focus do Figma é o quadrado da vez, que aparece ao clicar.
+const estados = ["Default", "Disabled", "Invalid"] as const
+
+type Dados = { divisao: Divisao; padrao: Padrao; valor: string; disabled?: boolean; invalido?: boolean }
+type Controles = Omit<Dados, "disabled" | "invalido"> & { estado: (typeof estados)[number] }
 
 // Os quadrados de cada grupo, com um separador entre os grupos.
 const casas = (grupos: readonly number[], invalido = false) => {
@@ -26,10 +30,10 @@ const casas = (grupos: readonly number[], invalido = false) => {
 }
 const total = (d: Divisao) => divisoes[d].reduce((a, b) => a + b, 0)
 
-// O valor guardado pode ter vindo de outras Casas ou de outro Pattern: fica só o que cabe e o que o padrão aceita.
+// O valor guardado pode ter vindo de outros Slots ou de outro Pattern: fica só o que cabe e o que o padrão aceita.
 const limpo = (valor: string, divisao: Divisao, padrao: Padrao) => [...valor].filter((c) => new RegExp(padroes[padrao]).test(c)).join("").slice(0, total(divisao))
 
-const codigo = ({ divisao, padrao, valor, disabled, invalido }: Controles, aoMudar: (v: string) => void) => (
+const codigo = ({ divisao, padrao, valor, disabled, invalido }: Dados, aoMudar: (v: string) => void) => (
   <InputOTP
     maxLength={total(divisao)}
     pattern={padroes[padrao]}
@@ -43,29 +47,28 @@ const codigo = ({ divisao, padrao, valor, disabled, invalido }: Controles, aoMud
 )
 
 // Nas vitrines, cada campo guarda o próprio valor.
-function Codigo(props: Controles) {
+function Codigo(props: Dados) {
   const [valor, setValor] = useState(props.valor)
   return codigo({ ...props, valor }, setValor)
 }
 
-const base: Controles = { divisao: "3 + 3", padrao: "Só números", valor: "", disabled: false, invalido: false }
+const base: Dados = { divisao: "3 + 3", padrao: "Só números", valor: "" }
 
 const meta = {
   title: "Componentes/InputOTP",
   // O que se digita na amostra atualiza o controle Value.
   render: function Amostra(args) {
     const [, atualizar] = useArgs<Controles>()
-    return codigo(args, (v) => atualizar({ valor: v }))
+    return codigo({ ...args, disabled: args.estado === "Disabled", invalido: args.estado === "Invalid" }, (v) => atualizar({ valor: v }))
   },
   parameters: pagina("Campo para códigos de uso único, como o que chega por SMS: um quadrado por caractere. O quadrado da vez ganha o anel de foco e um cursor piscando. Cada `InputOTPSlot` precisa do `index` dele."),
   argTypes: {
     divisao: { name: "Slots", control: "inline-radio", options: Object.keys(divisoes), description: "Quantos `InputOTPSlot` e como se agrupam: cada `InputOTPGroup` é um bloco, e o `InputOTPSeparator` traça o hífen entre eles. `maxLength` é o total.", table: { category: "Conteúdo" } },
     padrao: { name: "Pattern", control: "inline-radio", options: Object.keys(padroes), description: "No código, `pattern`: os caracteres aceitos, como `REGEXP_ONLY_DIGITS_AND_CHARS`, do pacote `input-otp`.", table: { category: "Comportamento" } },
     valor: { name: "Value", control: "text", description: "No código, `value`, com `onChange` para guardar o que se digita.", table: { category: "Conteúdo" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: o conjunto esmaece.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` em cada `InputOTPSlot`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Disabled é `disabled`: o conjunto esmaece. Invalid é `aria-invalid` em cada `InputOTPSlot`: borda de erro. O Focus é o quadrado da vez: clique na amostra.", table: { category: "Estado" } },
   },
-  args: base,
+  args: { ...base, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

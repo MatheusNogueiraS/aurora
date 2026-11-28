@@ -9,18 +9,19 @@ import { Kbd } from "@/components/ui/kbd"
 import { portrait } from "../../sandbox/art"
 import { Opcao, Opcoes, pagina, vitrine } from "./Opcoes"
 
-const midias = ["Nenhuma", "icon", "default"] as const
-type Midia = (typeof midias)[number]
-const fundos = { Nenhum: "", Borda: "border-sm", Muted: "bg-muted/50" } as const
+// Como no Figma: Media liga a mídia, e Media type é o `variant` do EmptyMedia.
+const tiposMidia = ["icon", "default"] as const
+type TipoMidia = (typeof tiposMidia)[number]
+const fundos = { none: "", border: "border-sm", muted: "bg-muted/50" } as const
 type Fundo = keyof typeof fundos
 
-type Controles = { midia: Midia; titulo: string; descricao: boolean; acoes: boolean; fundo: Fundo }
+type Controles = { midia: boolean; tipoMidia: TipoMidia; titulo: string; descricao: boolean; acoes: boolean; fundo: Fundo }
 
-const vazio = ({ midia, titulo, descricao, acoes, fundo }: Controles) => (
+const vazio = ({ midia, tipoMidia, titulo, descricao, acoes, fundo }: Controles) => (
   <Empty className={fundos[fundo] || undefined}>
     <EmptyHeader>
-      {midia === "icon" && <EmptyMedia variant="icon"><FolderCodeIcon /></EmptyMedia>}
-      {midia === "default" && <EmptyMedia><Avatar size="lg"><AvatarImage src={portrait("#462a71", "AS")} alt="Ana Souza" /><AvatarFallback>AS</AvatarFallback></Avatar></EmptyMedia>}
+      {midia && tipoMidia === "icon" && <EmptyMedia variant="icon"><FolderCodeIcon /></EmptyMedia>}
+      {midia && tipoMidia === "default" && <EmptyMedia><Avatar size="lg"><AvatarImage src={portrait("#462a71", "AS")} alt="Ana Souza" /><AvatarFallback>AS</AvatarFallback></Avatar></EmptyMedia>}
       <EmptyTitle>{titulo}</EmptyTitle>
       {descricao && <EmptyDescription>Você ainda não criou nenhum projeto. Comece criando o primeiro.</EmptyDescription>}
     </EmptyHeader>
@@ -33,14 +34,15 @@ const vazio = ({ midia, titulo, descricao, acoes, fundo }: Controles) => (
   </Empty>
 )
 
-const base: Controles = { midia: "icon", titulo: "Nenhum projeto ainda", descricao: true, acoes: true, fundo: "Nenhum" }
+const base: Controles = { midia: true, tipoMidia: "icon", titulo: "Nenhum projeto ainda", descricao: true, acoes: true, fundo: "none" }
 
 const meta = {
   title: "Componentes/Empty",
   render: vazio,
   parameters: pagina("Tela vazia: explica por que não há nada e sugere o próximo passo. Preenche o pai e centraliza o conteúdo.", "/fotos/ana.png"),
   argTypes: {
-    midia: { name: "Media", control: "inline-radio", options: midias, description: "`EmptyMedia` acima do título. No código, `variant=\"icon\"` põe o ícone num quadrado de fundo `muted`; `default` mostra a imagem como ela é, como um Avatar.", table: { category: "Conteúdo" } },
+    midia: { name: "Media", control: "boolean", description: "`EmptyMedia` acima do título.", table: { category: "Conteúdo" } },
+    tipoMidia: { name: "Media type", control: "inline-radio", options: tiposMidia, description: "No código, `variant` do `EmptyMedia`: `icon` põe o ícone num quadrado de fundo `muted`; `default` mostra a imagem como ela é, como um Avatar.", if: { arg: "midia" }, table: { category: "Conteúdo" } },
     titulo: { name: "Title", control: "text", description: "`EmptyTitle`.", table: { category: "Conteúdo" } },
     descricao: { name: "Description", control: "boolean", description: "`EmptyDescription`. Um link dentro dela ganha sublinhado.", table: { category: "Conteúdo" } },
     acoes: { name: "Actions", control: "boolean", description: "`EmptyContent`, abaixo do texto, para botões ou um campo.", table: { category: "Conteúdo" } },
@@ -60,7 +62,12 @@ export const Padrao: Story = {
 export const Midias: Story = {
   name: "Mídia",
   parameters: vitrine("No código, `variant` do `EmptyMedia`. Sem a propriedade, ele é `default`."),
-  render: () => <Opcoes larga>{midias.map((m) => <Opcao key={m} nome={m}>{vazio({ ...base, midia: m, acoes: false })}</Opcao>)}</Opcoes>,
+  render: () => (
+    <Opcoes larga>
+      <Opcao nome="Media off">{vazio({ ...base, midia: false, acoes: false })}</Opcao>
+      {tiposMidia.map((m) => <Opcao key={m} nome={m}>{vazio({ ...base, tipoMidia: m, acoes: false })}</Opcao>)}
+    </Opcoes>
+  ),
 }
 
 export const Fundos: Story = {

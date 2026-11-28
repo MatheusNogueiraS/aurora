@@ -102,7 +102,8 @@ export function Simula({ estado, so, children }: { estado: Interacao; so?: strin
 }
 
 // Desabilitado não recebe hover, foco nem clique no navegador, então a simulação também não aplica.
-export const estadoDe = (args: { estado?: Interacao; disabled?: boolean; carregando?: boolean }): Interacao =>
-  args.disabled || args.carregando ? "Default" : (args.estado ?? "Default")
+// O State dos controles também traz Disabled, Invalid e Expanded, que são propriedades de verdade: esses não se simulam.
+export const estadoDe = (args: { estado?: string; disabled?: boolean; carregando?: boolean }): Interacao =>
+  args.disabled || args.carregando || !args.estado || !Object.hasOwn(PSEUDOS, args.estado) ? "Default" : (args.estado as Interacao)
 
 export const simulaEstado: Decorator = (Historia, { args }) => <Simula estado={estadoDe(args)}><Historia /></Simula>

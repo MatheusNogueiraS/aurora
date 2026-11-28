@@ -5,29 +5,28 @@ import { useArgs } from "storybook/preview-api"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel, FieldLegend, FieldSet, FieldTitle } from "@/components/ui/field"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Opcao, Opcoes, Simula, pagina, simulaEstado, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, pagina, simulaEstado, vitrine } from "./Opcoes"
 
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 
-type Controles = { checked: boolean; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { checked: boolean; estado: (typeof estados)[number] }
 
 const meta = {
   title: "Componentes/Checkbox",
   // O clique na amostra atualiza o controle Checked, e o controle atualiza a amostra.
-  render: function Amostra({ checked, disabled, invalido }) {
+  render: function Amostra({ checked, estado }) {
     const [, atualizar] = useArgs<Controles>()
     return (
-      <Checkbox checked={checked} onCheckedChange={(marcado) => atualizar({ checked: marcado })} disabled={disabled || undefined} aria-invalid={invalido || undefined} aria-label="Aceito os termos" />
+      <Checkbox checked={checked} onCheckedChange={(marcado) => atualizar({ checked: marcado })} disabled={estado === "Disabled" || undefined} aria-invalid={estado === "Invalid" || undefined} aria-label="Aceito os termos" />
     )
   },
   parameters: pagina("Marca ou desmarca uma opção independente das outras."),
   argTypes: {
     checked: { name: "Checked", control: "boolean", description: "No código, `checked` (ou `defaultChecked`, quando o próprio Checkbox guarda o valor).", table: { category: "Estado" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Checkbox não tem hover no código.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a mudança e esmaece.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado (o Checkbox não tem hover no código). Disabled é `disabled`: impede a mudança e esmaece. Invalid é `aria-invalid`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { checked: true, estado: "Default", disabled: false, invalido: false },
+  args: { checked: true, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta
