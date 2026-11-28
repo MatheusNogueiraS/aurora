@@ -144,7 +144,7 @@ export const ComLimpar: Story = {
 
 export const Varios: Story = {
   name: "Multiple",
-  parameters: vitrine("O exemplo do shadcn com `multiple`: as escolhas viram chips (`ComboboxChip`) dentro de `ComboboxChips`, e o `X` de cada um a tira (`showRemove={false}` no `ComboboxChip` esconde o X). A lista se prende aos chips por `useComboboxAnchor`.", 360),
+  parameters: vitrine("O exemplo do shadcn com `multiple`: as escolhas viram chips (`ComboboxChip`) dentro de `ComboboxChips`, e o `X` de cada um a tira (`showRemove={false}` no `ComboboxChip` esconde o X). No fim, a mesma seta do campo simples abre a lista (`showTrigger`, ligado por padrão no `ComboboxChips`). O campo fica numa linha: o que não cabe rola na horizontal, sem barra, com um esmaecido no fim. A lista se prende aos chips por `useComboboxAnchor`.", 360),
   render: () => <Multiplo aberto />,
 }
 
