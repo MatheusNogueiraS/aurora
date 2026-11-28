@@ -14,7 +14,7 @@ type Controles = { campo: (typeof campos)[number]; placeholder: string; valor: s
 
 const meta = {
   title: "Componentes/Input",
-  // O que se digita na amostra atualiza o controle Valor, e o controle atualiza a amostra.
+  // O que se digita na amostra atualiza o controle Value, e o controle atualiza a amostra.
   render: function Amostra({ campo, placeholder, valor, disabled, invalido }) {
     const [, atualizar] = useArgs<Controles>()
     // O navegador não deixa o código escolher um arquivo, então o file fica sem `value`.
@@ -34,9 +34,9 @@ const meta = {
   },
   parameters: pagina("Campo de uma linha para digitar texto. Não tem Size: a altura é sempre 36 px, e a largura preenche o pai."),
   argTypes: {
-    campo: { name: "Tipo de campo", control: "inline-radio", options: campos, description: "No código, `type`. Só o `file` muda a aparência: ganha o botão de escolher arquivo.", table: { category: "Conteúdo" } },
+    campo: { name: "Type", control: "inline-radio", options: campos, description: "No código, `type`. Só o `file` muda a aparência: ganha o botão de escolher arquivo.", table: { category: "Conteúdo" } },
     placeholder: { name: "Placeholder", control: "text", description: "Texto de exemplo, em cor apagada, enquanto o campo está vazio.", if: { arg: "campo", eq: "text" }, table: { category: "Conteúdo" } },
-    valor: { name: "Valor", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Input guarda o valor).", if: { arg: "campo", eq: "text" }, table: { category: "Conteúdo" } },
+    valor: { name: "Value", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Input guarda o valor).", if: { arg: "campo", eq: "text" }, table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Input não tem hover no código.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a digitação e esmaece.", table: { category: "Estado" } },
     invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },

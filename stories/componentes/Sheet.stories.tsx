@@ -44,10 +44,10 @@ const meta = {
   argTypes: {
     aberto: { name: "Open", control: "boolean", description: "No código, `open` no `Sheet` (ou `defaultOpen`).", table: { category: "Estado" } },
     side: { name: "Side", control: "inline-radio", options: lados, description: "No código, `side` no `SheetContent`: a borda de onde o painel sai. Dos lados, ocupa 3/4 da largura até 384 px; em cima e embaixo, a largura toda.", table: { category: "Aparência" } },
-    titulo: { name: "Título", control: "text", description: "`SheetTitle`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "boolean", description: "`SheetDescription`, abaixo do título.", table: { category: "Conteúdo" } },
-    fechar: { name: "Botão de fechar", control: "boolean", description: "`showCloseButton`: o X no canto de cima.", table: { category: "Conteúdo" } },
-    rodape: { name: "Rodapé", control: "boolean", description: "`SheetFooter`: fica colado embaixo, com os botões empilhados.", table: { category: "Conteúdo" } },
+    titulo: { name: "Title", control: "text", description: "`SheetTitle`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`SheetDescription`, abaixo do título.", table: { category: "Conteúdo" } },
+    fechar: { name: "Close button", control: "boolean", description: "`showCloseButton`: o X no canto de cima.", table: { category: "Conteúdo" } },
+    rodape: { name: "Footer", control: "boolean", description: "`SheetFooter`: fica colado embaixo, com os botões empilhados.", table: { category: "Conteúdo" } },
   },
   args: { aberto: false, ...base },
 } satisfies Meta<Controles>

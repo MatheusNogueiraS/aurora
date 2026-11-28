@@ -52,16 +52,16 @@ const base: Controles = { divisao: "3 + 3", padrao: "Só números", valor: "", d
 
 const meta = {
   title: "Componentes/InputOTP",
-  // O que se digita na amostra atualiza o controle Valor.
+  // O que se digita na amostra atualiza o controle Value.
   render: function Amostra(args) {
     const [, atualizar] = useArgs<Controles>()
     return codigo(args, (v) => atualizar({ valor: v }))
   },
   parameters: pagina("Campo para códigos de uso único, como o que chega por SMS: um quadrado por caractere. O quadrado da vez ganha o anel de foco e um cursor piscando. Cada `InputOTPSlot` precisa do `index` dele."),
   argTypes: {
-    divisao: { name: "Casas", control: "inline-radio", options: Object.keys(divisoes), description: "Quantos `InputOTPSlot` e como se agrupam: cada `InputOTPGroup` é um bloco, e o `InputOTPSeparator` traça o hífen entre eles. `maxLength` é o total.", table: { category: "Conteúdo" } },
+    divisao: { name: "Slots", control: "inline-radio", options: Object.keys(divisoes), description: "Quantos `InputOTPSlot` e como se agrupam: cada `InputOTPGroup` é um bloco, e o `InputOTPSeparator` traça o hífen entre eles. `maxLength` é o total.", table: { category: "Conteúdo" } },
     padrao: { name: "Pattern", control: "inline-radio", options: Object.keys(padroes), description: "No código, `pattern`: os caracteres aceitos, como `REGEXP_ONLY_DIGITS_AND_CHARS`, do pacote `input-otp`.", table: { category: "Comportamento" } },
-    valor: { name: "Valor", control: "text", description: "No código, `value`, com `onChange` para guardar o que se digita.", table: { category: "Conteúdo" } },
+    valor: { name: "Value", control: "text", description: "No código, `value`, com `onChange` para guardar o que se digita.", table: { category: "Conteúdo" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled`: o conjunto esmaece.", table: { category: "Estado" } },
     invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` em cada `InputOTPSlot`: borda de erro.", table: { category: "Estado" } },
   },

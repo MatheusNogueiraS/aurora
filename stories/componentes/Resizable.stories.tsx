@@ -25,7 +25,7 @@ const meta = {
   parameters: pagina("Painéis lado a lado com uma divisória que se arrasta para mudar o tamanho de cada um. Pelo teclado, a divisória focada anda com as setas. O tamanho inicial de cada painel é `defaultSize`, em porcentagem quando é um texto sem unidade."),
   argTypes: {
     orientacao: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation` no `ResizablePanelGroup`. `vertical` empilha os painéis.", table: { category: "Aparência" } },
-    alca: { name: "Alça", control: "boolean", description: "`withHandle` no `ResizableHandle`: um traço no meio da divisória, para mostrar que ela se arrasta.", table: { category: "Conteúdo" } },
+    alca: { name: "Handle", control: "boolean", description: "`withHandle` no `ResizableHandle`: um traço no meio da divisória, para mostrar que ela se arrasta.", table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. Focada, a divisória ganha a linha de foco.", table: { category: "Estado" } },
   },
   args: { orientacao: "horizontal", alca: true, estado: "Default" },

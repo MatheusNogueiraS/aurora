@@ -25,7 +25,7 @@ const meta = {
   parameters: pagina("Escolhe um número, ou uma faixa entre números, arrastando um pino. Não tem Size: a trilha tem 8 px de espessura e o comprimento preenche o pai."),
   argTypes: {
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation`.", table: { category: "Aparência" } },
-    pinos: { name: "Pinos", control: "inline-radio", options: [1, 2, 3], description: "Quantos números o `value` (ou `defaultValue`) recebe, como `[25, 75]`. A trilha pinta do primeiro ao último pino.", table: { category: "Conteúdo" } },
+    pinos: { name: "Thumbs", control: "inline-radio", options: [1, 2, 3], description: "Quantos números o `value` (ou `defaultValue`) recebe, como `[25, 75]`. A trilha pinta do primeiro ao último pino.", table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, no primeiro pino.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a mudança e esmaece.", table: { category: "Estado" } },
   },

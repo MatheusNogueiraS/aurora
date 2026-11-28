@@ -40,11 +40,11 @@ const meta = {
   render: vazio,
   parameters: pagina("Tela vazia: explica por que não há nada e sugere o próximo passo. Preenche o pai e centraliza o conteúdo.", "/fotos/ana.png"),
   argTypes: {
-    midia: { name: "Mídia", control: "inline-radio", options: midias, description: "`EmptyMedia` acima do título. No código, `variant=\"icon\"` põe o ícone num quadrado de fundo `muted`; `default` mostra a imagem como ela é, como um Avatar.", table: { category: "Conteúdo" } },
-    titulo: { name: "Título", control: "text", description: "`EmptyTitle`.", table: { category: "Conteúdo" } },
-    descricao: { name: "Descrição", control: "boolean", description: "`EmptyDescription`. Um link dentro dela ganha sublinhado.", table: { category: "Conteúdo" } },
-    acoes: { name: "Ações", control: "boolean", description: "`EmptyContent`, abaixo do texto, para botões ou um campo.", table: { category: "Conteúdo" } },
-    fundo: { name: "Fundo", control: "inline-radio", options: Object.keys(fundos), description: "O Empty já traz a borda tracejada sem largura: `border-sm` a mostra. `bg-muted/50` dá um fundo. São classes, não variantes.", table: { category: "Aparência" } },
+    midia: { name: "Media", control: "inline-radio", options: midias, description: "`EmptyMedia` acima do título. No código, `variant=\"icon\"` põe o ícone num quadrado de fundo `muted`; `default` mostra a imagem como ela é, como um Avatar.", table: { category: "Conteúdo" } },
+    titulo: { name: "Title", control: "text", description: "`EmptyTitle`.", table: { category: "Conteúdo" } },
+    descricao: { name: "Description", control: "boolean", description: "`EmptyDescription`. Um link dentro dela ganha sublinhado.", table: { category: "Conteúdo" } },
+    acoes: { name: "Actions", control: "boolean", description: "`EmptyContent`, abaixo do texto, para botões ou um campo.", table: { category: "Conteúdo" } },
+    fundo: { name: "Background", control: "inline-radio", options: Object.keys(fundos), description: "O Empty já traz a borda tracejada sem largura: `border-sm` a mostra. `bg-muted/50` dá um fundo. São classes, não variantes.", table: { category: "Aparência" } },
   },
   args: base,
 } satisfies Meta<Controles>

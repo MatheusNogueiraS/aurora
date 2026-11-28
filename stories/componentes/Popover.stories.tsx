@@ -48,8 +48,8 @@ const meta = {
     aberto: { name: "Open", control: "boolean", description: "No código, `open` no `Popover` (ou `defaultOpen`).", table: { category: "Estado" } },
     side: { name: "Side", control: "inline-radio", options: lados, description: "No código, `side` no `PopoverContent`: o lado do botão em que a caixa abre. Sem espaço, ela vai para o lado oposto.", table: { category: "Aparência" } },
     align: { name: "Align", control: "inline-radio", options: alinhamentos, description: "No código, `align`: a caixa alinhada ao começo, ao centro ou ao fim do botão.", table: { category: "Aparência" } },
-    cabecalho: { name: "Cabeçalho", control: "boolean", description: "`PopoverHeader` com `PopoverTitle` e `PopoverDescription`.", table: { category: "Conteúdo" } },
-    formulario: { name: "Formulário", control: "boolean", description: "Qualquer conteúdo entra no `PopoverContent`, como os campos do exemplo do shadcn.", table: { category: "Conteúdo" } },
+    cabecalho: { name: "Header", control: "boolean", description: "`PopoverHeader` com `PopoverTitle` e `PopoverDescription`.", table: { category: "Conteúdo" } },
+    formulario: { name: "Content", control: "boolean", description: "Qualquer conteúdo entra no `PopoverContent`, como os campos do exemplo do shadcn.", table: { category: "Conteúdo" } },
   },
   args: { aberto: false, ...base },
 } satisfies Meta<Controles>

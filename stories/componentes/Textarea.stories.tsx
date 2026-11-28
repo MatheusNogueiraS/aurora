@@ -12,7 +12,7 @@ type Controles = { placeholder: string; valor: string; estado: Interacao; disabl
 
 const meta = {
   title: "Componentes/Textarea",
-  // O que se digita na amostra atualiza o controle Valor, e o controle atualiza a amostra.
+  // O que se digita na amostra atualiza o controle Value, e o controle atualiza a amostra.
   render: function Amostra({ placeholder, valor, disabled, invalido }) {
     const [, atualizar] = useArgs<Controles>()
     return (
@@ -22,7 +22,7 @@ const meta = {
   parameters: pagina("Campo de várias linhas para textos longos, como uma mensagem. Não tem Size: começa com 64 px de altura e cresce com o texto; a largura preenche o pai."),
   argTypes: {
     placeholder: { name: "Placeholder", control: "text", description: "Texto de exemplo, em cor apagada, enquanto o campo está vazio.", table: { category: "Conteúdo" } },
-    valor: { name: "Valor", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Textarea guarda o valor). Quebre linhas para ver o campo crescer.", table: { category: "Conteúdo" } },
+    valor: { name: "Value", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Textarea guarda o valor). Quebre linhas para ver o campo crescer.", table: { category: "Conteúdo" } },
     estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Textarea não tem hover no código.", table: { category: "Estado" } },
     disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a digitação e esmaece.", table: { category: "Estado" } },
     invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },

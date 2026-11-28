@@ -36,7 +36,7 @@ const alinhamentos = ["start", "center", "end"] as const
 type Alinhamento = (typeof alinhamentos)[number]
 const interacoes: Interacao[] = ["Default", "Focus"]
 
-type Controles = { aberto: boolean; side: Lado; align: Alinhamento; agrupado: boolean; seta: boolean; limpar: boolean; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { aberto: boolean; side: Lado; align: Alinhamento; agrupado: boolean; seta: boolean; limpar: boolean; campoTipo: "Input" | "Chips"; estado: Interacao; disabled: boolean; invalido: boolean }
 
 const lista = (agrupado: boolean) =>
   agrupado ? (
@@ -53,7 +53,7 @@ const lista = (agrupado: boolean) =>
     <ComboboxList>{(item: string) => <ComboboxItem key={item} value={item}>{item}</ComboboxItem>}</ComboboxList>
   )
 
-const campo = ({ side = "bottom", align = "start", agrupado, seta, limpar, disabled, invalido }: Omit<Controles, "aberto" | "estado" | "side" | "align"> & { side?: Lado; align?: Alinhamento }, raiz: { open?: boolean; onOpenChange?: (o: boolean) => void; defaultOpen?: boolean; defaultValue?: string; defaultInputValue?: string } = {}) => (
+const campo = ({ side = "bottom", align = "start", agrupado, seta, limpar, disabled, invalido }: Omit<Controles, "aberto" | "estado" | "side" | "align" | "campoTipo"> & { side?: Lado; align?: Alinhamento }, raiz: { open?: boolean; onOpenChange?: (o: boolean) => void; defaultOpen?: boolean; defaultValue?: string; defaultInputValue?: string } = {}) => (
   <Combobox items={agrupado ? grupos : pessoas} {...raiz}>
     <ComboboxInput placeholder="Buscar pessoa" aria-label="Pessoa" showTrigger={seta} showClear={limpar || undefined} disabled={disabled || undefined} aria-invalid={invalido || undefined} className="w-64" />
     <ComboboxContent side={side === "bottom" ? undefined : side} align={align === "start" ? undefined : align}>
@@ -63,13 +63,13 @@ const campo = ({ side = "bottom", align = "start", agrupado, seta, limpar, disab
   </Combobox>
 )
 
-const base = { agrupado: false, seta: true, limpar: false, disabled: false, invalido: false }
+const base = { agrupado: false, seta: true, limpar: false, campoTipo: "Input" as const, disabled: false, invalido: false }
 
 // O exemplo do shadcn de várias escolhas: cada pessoa escolhida vira um chip dentro do campo.
-function Multiplo({ aberto }: { aberto?: boolean }) {
+function Multiplo({ aberto, open, onOpenChange }: { aberto?: boolean; open?: boolean; onOpenChange?: (o: boolean) => void }) {
   const ancora = useComboboxAnchor()
   return (
-    <Combobox multiple items={pessoas} defaultValue={["Bruno Lima", "Carla Dias"]} defaultOpen={aberto}>
+    <Combobox multiple items={pessoas} defaultValue={["Bruno Lima", "Carla Dias"]} defaultOpen={aberto} open={open} onOpenChange={onOpenChange}>
       <ComboboxChips ref={ancora} className="w-80">
         <ComboboxValue>
           {(valores: string[]) => (
@@ -91,21 +91,23 @@ function Multiplo({ aberto }: { aberto?: boolean }) {
 const meta = {
   title: "Componentes/Combobox",
   // Abrir e fechar na amostra atualiza o controle Open.
-  render: function Amostra({ aberto, ...args }) {
+  render: function Amostra({ aberto, campoTipo, ...args }) {
     const [, atualizar] = useArgs<Controles>()
-    return campo(args, { open: aberto, onOpenChange: (o: boolean) => atualizar({ aberto: o }) })
+    const raiz = { open: aberto, onOpenChange: (o: boolean) => atualizar({ aberto: o }) }
+    return campoTipo === "Chips" ? <Multiplo {...raiz} /> : campo(args, raiz)
   },
   parameters: pagina("Campo com busca que filtra uma lista enquanto se digita, para escolher entre muitas opções. O campo é um InputGroup e a lista tem o visual do Select. Na amostra, digite ou use o controle **Open**; as opções abertas embaixo rodam no próprio quadro."),
   argTypes: {
     aberto: { name: "Open", control: "boolean", description: "No código, `open` no `Combobox` (ou `defaultOpen`).", table: { category: "Estado" } },
-    side: { name: "Side", control: "inline-radio", options: lados, description: "No código, `side` no `ComboboxContent`: a lista abre embaixo ou em cima do campo.", table: { category: "Aparência" } },
-    align: { name: "Align", control: "inline-radio", options: alinhamentos, description: "No código, `align`. Sem a propriedade, a lista alinha ao começo do campo (`start`). Ela é um pouco mais larga que o campo.", table: { category: "Aparência" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. Com o campo focado, ele ganha a borda e o anel do InputGroup.", table: { category: "Estado" } },
-    agrupado: { name: "Grupos", control: "boolean", description: "`items` em grupos: cada `ComboboxGroup` com `ComboboxLabel` e `ComboboxCollection`, separados por `ComboboxSeparator`.", table: { category: "Conteúdo" } },
-    seta: { name: "Seta", control: "boolean", description: "`showTrigger` no `ComboboxInput`: o botão de seta que abre a lista.", table: { category: "Conteúdo" } },
-    limpar: { name: "Limpar", control: "boolean", description: "`showClear`: um X que apaga a escolha. Com algo escolhido, ele aparece no lugar da seta.", table: { category: "Conteúdo" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` no `ComboboxInput`.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` no `ComboboxInput`: borda de erro.", table: { category: "Estado" } },
+    side: { name: "Side", if: { arg: "campoTipo", eq: "Input" }, control: "inline-radio", options: lados, description: "No código, `side` no `ComboboxContent`: a lista abre embaixo ou em cima do campo.", table: { category: "Aparência" } },
+    align: { name: "Align", if: { arg: "campoTipo", eq: "Input" }, control: "inline-radio", options: alinhamentos, description: "No código, `align`. Sem a propriedade, a lista alinha ao começo do campo (`start`). Ela é um pouco mais larga que o campo.", table: { category: "Aparência" } },
+    estado: { name: "State", if: { arg: "campoTipo", eq: "Input" }, control: "inline-radio", options: interacoes, description: "Simulado. Com o campo focado, ele ganha a borda e o anel do InputGroup.", table: { category: "Estado" } },
+    agrupado: { name: "Groups", if: { arg: "campoTipo", eq: "Input" }, control: "boolean", description: "`items` em grupos: cada `ComboboxGroup` com `ComboboxLabel` e `ComboboxCollection`, separados por `ComboboxSeparator`.", table: { category: "Conteúdo" } },
+    seta: { name: "Trigger", if: { arg: "campoTipo", eq: "Input" }, control: "boolean", description: "`showTrigger` no `ComboboxInput`: o botão de seta que abre a lista.", table: { category: "Conteúdo" } },
+    limpar: { name: "Clear", if: { arg: "campoTipo", eq: "Input" }, control: "boolean", description: "`showClear`: um X que apaga a escolha. Com algo escolhido, ele aparece no lugar da seta.", table: { category: "Conteúdo" } },
+    campoTipo: { name: "Field", control: "inline-radio", options: ["Input", "Chips"], description: "O campo: `ComboboxInput` ou, com `multiple` no `Combobox`, `ComboboxChips`, com um chip por escolha e o `ComboboxChipsInput` para buscar, e a seta vem ligada (`showTrigger`). Os controles Trigger, Clear, Disabled e Invalid valem para o `ComboboxInput`.", table: { category: "Conteúdo" } },
+    disabled: { name: "Disabled", if: { arg: "campoTipo", eq: "Input" }, control: "boolean", description: "`disabled` no `ComboboxInput`.", table: { category: "Estado" } },
+    invalido: { name: "Invalid", if: { arg: "campoTipo", eq: "Input" }, control: "boolean", description: "`aria-invalid` no `ComboboxInput`: borda de erro.", table: { category: "Estado" } },
   },
   args: { aberto: false, side: "bottom", align: "start", ...base, estado: "Default" },
 } satisfies Meta<Controles>
