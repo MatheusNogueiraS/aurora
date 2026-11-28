@@ -3,20 +3,21 @@ import type { Meta, StoryObj } from "@storybook/react-vite"
 import { Field, FieldContent, FieldDescription, FieldLabel, FieldLegend, FieldSet, FieldTitle } from "@/components/ui/field"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine } from "./Opcoes"
 
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 const formas = [["pix", "Pix"], ["boleto", "Boleto"]] as const
 
-type Controles = { estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { estado: (typeof estados)[number] }
 
 const meta = {
   title: "Componentes/Radio Group",
-  render: ({ disabled, invalido }) => (
-    <RadioGroup defaultValue="pix" disabled={disabled || undefined} className="w-fit">
+  render: ({ estado }) => (
+    <RadioGroup defaultValue="pix" disabled={estado === "Disabled" || undefined} className="w-fit">
       {formas.map(([valor, nome]) => (
         <div key={valor} className="flex items-center gap-(--gap-sm)">
-          <RadioGroupItem value={valor} id={`radio-${valor}`} aria-invalid={invalido || undefined} />
+          <RadioGroupItem value={valor} id={`radio-${valor}`} aria-invalid={estado === "Invalid" || undefined} />
           <Label htmlFor={`radio-${valor}`}>{nome}</Label>
         </div>
       ))}
@@ -24,11 +25,9 @@ const meta = {
   ),
   parameters: pagina("Escolhe uma opção entre várias: marcar uma desmarca as outras. `RadioGroup` é o grupo e `RadioGroupItem` é cada opção."),
   argTypes: {
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Radio não tem hover no código.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` no `RadioGroup` desabilita todas as opções; em um `RadioGroupItem`, só aquela.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` em cada `RadioGroupItem`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado (o Radio não tem hover no código). Disabled é `disabled` no `RadioGroup`, que desabilita todas as opções (em um `RadioGroupItem`, só aquela). Invalid é `aria-invalid` em cada `RadioGroupItem`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { estado: "Default", disabled: false, invalido: false },
+  args: { estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

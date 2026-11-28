@@ -4,30 +4,29 @@ import { useArgs } from "storybook/preview-api"
 import { Button } from "@/components/ui/button"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
-import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine } from "./Opcoes"
 
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 
-type Controles = { placeholder: string; valor: string; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { placeholder: string; valor: string; estado: (typeof estados)[number] }
 
 const meta = {
   title: "Componentes/Textarea",
   // O que se digita na amostra atualiza o controle Value, e o controle atualiza a amostra.
-  render: function Amostra({ placeholder, valor, disabled, invalido }) {
+  render: function Amostra({ placeholder, valor, estado }) {
     const [, atualizar] = useArgs<Controles>()
     return (
-      <Textarea placeholder={placeholder} value={valor} onChange={(e) => atualizar({ valor: e.target.value })} disabled={disabled || undefined} aria-invalid={invalido || undefined} aria-label="Mensagem" />
+      <Textarea placeholder={placeholder} value={valor} onChange={(e) => atualizar({ valor: e.target.value })} disabled={estado === "Disabled" || undefined} aria-invalid={estado === "Invalid" || undefined} aria-label="Mensagem" />
     )
   },
   parameters: pagina("Campo de várias linhas para textos longos, como uma mensagem. Não tem Size: começa com 64 px de altura e cresce com o texto; a largura preenche o pai."),
   argTypes: {
     placeholder: { name: "Placeholder", control: "text", description: "Texto de exemplo, em cor apagada, enquanto o campo está vazio.", table: { category: "Conteúdo" } },
     valor: { name: "Value", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Textarea guarda o valor). Quebre linhas para ver o campo crescer.", table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Textarea não tem hover no código.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a digitação e esmaece.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado (o Textarea não tem hover no código). Disabled é `disabled`: impede a digitação e esmaece. Invalid é `aria-invalid`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { placeholder: "Escreva sua mensagem", valor: "", estado: "Default", disabled: false, invalido: false },
+  args: { placeholder: "Escreva sua mensagem", valor: "", estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

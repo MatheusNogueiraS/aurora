@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { Spinner } from "@/components/ui/spinner"
-import { Opcao, Opcoes, Simula, estadoDe, interacoes, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, interacoes, pagina, vitrine } from "./Opcoes"
 
 const variantes = ["default", "secondary", "outline", "ghost", "destructive", "link"] as const
 const tamanhos = ["xs", "sm", "default", "lg"] as const
@@ -54,15 +54,15 @@ type Controles = {
   soIcone: boolean
   largura: "Conteúdo" | "Preenche"
   alinhamento: keyof typeof JUSTIFICAR
-  estado: Interacao
-  disabled: boolean
+  estado: (typeof estados)[number]
   carregando: boolean
-  invalido: boolean
-  expandido: boolean
 }
 
+// Um State só, como no Figma: Expanded, Invalid e Disabled são estados, não controles à parte.
+const estados = [...interacoes, "Expanded", "Invalid", "Disabled"] as const
+
 // Devolve o próprio Button, e não um componente intermediário: é isso que faz o Show code mostrar o código real.
-function botao({ variant, size, texto, iconeEsquerda, iconeDireita, soIcone, largura, alinhamento, disabled, carregando, invalido, expandido }: Controles) {
+function botao({ variant, size, texto, iconeEsquerda, iconeDireita, soIcone, largura, alinhamento, estado, carregando }: Controles) {
   const preenche = largura === "Preenche"
   const Esquerda = iconeEsquerda === "Nenhum" ? null : ICONES[iconeEsquerda]
   const Direita = iconeDireita === "Nenhum" ? null : ICONES[iconeDireita]
@@ -74,9 +74,9 @@ function botao({ variant, size, texto, iconeEsquerda, iconeDireita, soIcone, lar
       variant={variant === "default" ? undefined : variant}
       size={soIcone ? tamanhosIcone[size] : size === "default" ? undefined : size}
       className={cn(preenche && "w-full", preenche && JUSTIFICAR[alinhamento]) || undefined}
-      disabled={disabled || carregando || undefined}
-      aria-invalid={invalido || undefined}
-      aria-expanded={expandido || undefined}
+      disabled={estado === "Disabled" || carregando || undefined}
+      aria-invalid={estado === "Invalid" || undefined}
+      aria-expanded={estado === "Expanded" || undefined}
       aria-label={soIcone ? NOMES[sozinho] : undefined}
     >
       {soIcone && (carregando ? <Spinner /> : <Sozinho />)}
@@ -98,13 +98,10 @@ const meta = {
     iconeEsquerda: { name: "Icon left", control: "select", options: opcoesIcone, description: "Fica antes do texto, com `data-icon=\"inline-start\"`, que ajusta o padding.", table: { category: "Conteúdo" } },
     iconeDireita: { name: "Icon right", control: "select", options: opcoesIcone, description: "Fica depois do texto, com `data-icon=\"inline-end\"`, que ajusta o padding.", table: { category: "Conteúdo" } },
     soIcone: { name: "Icon only", control: "boolean", description: "Esconde o texto e deixa o botão quadrado. Usa o ícone escolhido à esquerda ou, sem ele, o da direita.", table: { category: "Conteúdo" } },
-    largura: { name: "Largura", control: "inline-radio", options: ["Conteúdo", "Preenche"], description: "`Conteúdo` acompanha o que está dentro. `Preenche` ocupa todo o espaço do pai com `className=\"w-full\"`. Não é uma variante do botão.", table: { category: "Largura" } },
-    alinhamento: { name: "Alinhamento", control: "inline-radio", options: Object.keys(JUSTIFICAR), description: "Posição do conteúdo quando o botão preenche: `justify-start` ou `justify-end`.", if: { arg: "largura", eq: "Preenche" }, table: { category: "Largura" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Hover, Focus e Pressed não são propriedades: quem aplica é o navegador, quando o mouse passa, o teclado foca ou o clique aperta. Aqui a amostra só simula, e o Show code não muda.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a ação e deixa o botão esmaecido.", table: { category: "Estado" } },
-    carregando: { name: "Loading", control: "boolean", description: "Mostra o `Spinner` no lugar do ícone e desabilita o botão.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro, para botões que abrem um campo, como um seletor de data.", table: { category: "Estado" } },
-    expandido: { name: "Expanded", control: "boolean", description: "`aria-expanded`: o menu ou painel que o botão abre está aberto. Muda o fundo em `outline` e `ghost`. É o mais perto de um \"selected\" no Button; o selecionado de verdade é o `Toggle`.", table: { category: "Estado" } },
+    largura: { name: "Width", control: "inline-radio", options: ["Conteúdo", "Preenche"], description: "`Conteúdo` acompanha o que está dentro. `Preenche` ocupa todo o espaço do pai com `className=\"w-full\"`. Não é uma variante do botão.", table: { category: "Largura" } },
+    alinhamento: { name: "Alignment", control: "inline-radio", options: Object.keys(JUSTIFICAR), description: "Posição do conteúdo quando o botão preenche: `justify-start` ou `justify-end`.", if: { arg: "largura", eq: "Preenche" }, table: { category: "Largura" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Hover, Focus e Pressed não são propriedades: quem aplica é o navegador, quando o mouse passa, o teclado foca ou o clique aperta. Aqui a amostra só simula, e o Show code não muda. Expanded é `aria-expanded`: o menu ou painel que o botão abre está aberto (muda o fundo em `outline` e `ghost`; o selecionado de verdade é o `Toggle`). Invalid é `aria-invalid`: borda de erro, para botões que abrem um campo, como um seletor de data. Disabled é `disabled`: impede a ação e esmaece.", table: { category: "Estado" } },
+    carregando: { name: "Loading", control: "boolean", description: "Mostra o `Spinner` no lugar do ícone e desabilita o botão. No Figma, é a troca do ícone pelo Spinner.", table: { category: "Estado" } },
   },
   args: {
     variant: "default",
@@ -116,10 +113,7 @@ const meta = {
     largura: "Conteúdo",
     alinhamento: "Centro",
     estado: "Default",
-    disabled: false,
     carregando: false,
-    invalido: false,
-    expandido: false,
   },
 } satisfies Meta<Controles>
 

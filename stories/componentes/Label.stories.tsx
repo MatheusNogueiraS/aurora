@@ -5,15 +5,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Opcao, Opcoes, pagina, vitrine } from "./Opcoes"
 
+// Como no Figma: o Label tem State Default e Disabled.
+const estados = ["Default", "Disabled"] as const
+
 const meta = {
   title: "Componentes/Label",
   render: ({ texto }) => <Label htmlFor="label-campo">{texto}</Label>,
   parameters: pagina("Nome de um campo de formulário. O `htmlFor` recebe o `id` do campo: clicar no nome foca o campo (ou marca o Checkbox, o Switch e o Radio), e o leitor de tela lê o nome junto com ele. Na amostra, clique no nome e o cursor vai para o campo abaixo. Para texto solto, sem campo, use os estilos de tipografia, e não o Label."),
   argTypes: {
     texto: { name: "Text", control: "text", table: { category: "Conteúdo" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Disabled: o Label esmaece quando o pai tem `data-disabled`, como o `Field` desabilitado. Na amostra, a moldura recebe `data-disabled` e o campo, `disabled`.", table: { category: "Estado" } },
   },
-  args: { texto: "Nome" },
-} satisfies Meta<{ texto: string }>
+  args: { texto: "Nome", estado: "Default" },
+} satisfies Meta<{ texto: string; estado: (typeof estados)[number] }>
 
 export default meta
 type Story = StoryObj<typeof meta>
@@ -21,7 +25,7 @@ type Story = StoryObj<typeof meta>
 export const Padrao: Story = {
   name: "Padrão",
   // O campo fica fora do Show code: a página documenta o Label, e o campo só mostra o clique funcionando.
-  decorators: [(Historia) => <div className="flex w-60 flex-col gap-(--gap-sm)"><Historia /><Input id="label-campo" placeholder="Seu nome" /></div>],
+  decorators: [(Historia, { args }) => <div data-disabled={args.estado === "Disabled" || undefined} className="group flex w-60 flex-col gap-(--gap-sm)"><Historia /><Input id="label-campo" placeholder="Seu nome" disabled={args.estado === "Disabled" || undefined} /></div>],
 }
 
 export const Composicoes: Story = {

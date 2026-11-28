@@ -7,12 +7,14 @@ import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from
 const variantes = ["default", "line"] as const
 const orientacoes = ["horizontal", "vertical"] as const
 const interacoes: Interacao[] = ["Default", "Hover", "Focus"]
+// Um State só, como no Figma: Active e Disabled são estados, não controles à parte.
+const estados = [...interacoes, "Active", "Disabled"] as const
 // Os estados aparecem na segunda aba: a primeira é a ativa.
 const inativa = "[data-slot=tabs-trigger]:not([data-active])"
 
-type Controles = { variant: (typeof variantes)[number]; orientation: (typeof orientacoes)[number]; icone: boolean; estado: Interacao; disabled: boolean }
+type Controles = { variant: (typeof variantes)[number]; orientation: (typeof orientacoes)[number]; icone: boolean; estado: (typeof estados)[number] }
 
-const abas = ({ variant, orientation, disabled }: Partial<Controles> = {}) => (
+const abas = ({ variant, orientation, disabled }: Partial<Controles> & { disabled?: boolean } = {}) => (
   <Tabs defaultValue="pix" orientation={orientation}>
     <TabsList variant={variant}>
       <TabsTrigger value="pix">Pix</TabsTrigger>
@@ -23,11 +25,11 @@ const abas = ({ variant, orientation, disabled }: Partial<Controles> = {}) => (
 
 const meta = {
   title: "Componentes/Tabs",
-  render: ({ variant, orientation, icone, disabled }) => (
-    <Tabs defaultValue="pix" orientation={orientation === "horizontal" ? undefined : orientation}>
+  render: ({ variant, orientation, icone, estado }) => (
+    <Tabs key={estado} defaultValue={estado === "Active" ? "boleto" : "pix"} orientation={orientation === "horizontal" ? undefined : orientation}>
       <TabsList variant={variant === "default" ? undefined : variant}>
         <TabsTrigger value="pix">{icone && <QrCodeIcon data-icon="inline-start" />}Pix</TabsTrigger>
-        <TabsTrigger value="boleto" disabled={disabled || undefined}>{icone && <BarcodeIcon data-icon="inline-start" />}Boleto</TabsTrigger>
+        <TabsTrigger value="boleto" disabled={estado === "Disabled" || undefined}>{icone && <BarcodeIcon data-icon="inline-start" />}Boleto</TabsTrigger>
       </TabsList>
       <TabsContent value="pix">Aprovado na hora.</TabsContent>
       <TabsContent value="boleto">Aprovado em até 3 dias úteis.</TabsContent>
@@ -38,10 +40,9 @@ const meta = {
     variant: { name: "Type", control: "inline-radio", options: variantes, description: "No código, `variant` do `TabsList`.", table: { category: "Aparência" } },
     orientation: { name: "Orientation", control: "inline-radio", options: orientacoes, description: "No código, `orientation` do `Tabs`. Na vertical, as abas ficam em coluna, ao lado do conteúdo.", table: { category: "Aparência" } },
     icone: { name: "Icon", control: "boolean", description: "O atributo `data-icon` reduz o padding do lado do ícone.", table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado, na aba Boleto. Hover só muda a aba que não está ativa.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` na aba Boleto: impede a troca e esmaece.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Tudo na aba Boleto. Hover e Focus são simulados; Hover só muda a aba que não está ativa. Active é a aba escolhida (`value` ou `defaultValue` do `Tabs`). Disabled é `disabled`: impede a troca e esmaece.", table: { category: "Estado" } },
   },
-  args: { variant: "default", orientation: "horizontal", icone: false, estado: "Default", disabled: false },
+  args: { variant: "default", orientation: "horizontal", icone: false, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

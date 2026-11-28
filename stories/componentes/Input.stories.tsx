@@ -5,17 +5,18 @@ import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine } from "./Opcoes"
 
 const campos = ["text", "file"] as const
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 
-type Controles = { campo: (typeof campos)[number]; placeholder: string; valor: string; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { campo: (typeof campos)[number]; placeholder: string; valor: string; estado: (typeof estados)[number] }
 
 const meta = {
   title: "Componentes/Input",
   // O que se digita na amostra atualiza o controle Value, e o controle atualiza a amostra.
-  render: function Amostra({ campo, placeholder, valor, disabled, invalido }) {
+  render: function Amostra({ campo, placeholder, valor, estado }) {
     const [, atualizar] = useArgs<Controles>()
     // O navegador não deixa o código escolher um arquivo, então o file fica sem `value`.
     const arquivo = campo === "file"
@@ -26,8 +27,8 @@ const meta = {
         placeholder={arquivo ? undefined : placeholder}
         value={arquivo ? undefined : valor}
         onChange={arquivo ? undefined : (e) => atualizar({ valor: e.target.value })}
-        disabled={disabled || undefined}
-        aria-invalid={invalido || undefined}
+        disabled={estado === "Disabled" || undefined}
+        aria-invalid={estado === "Invalid" || undefined}
         aria-label="Nome"
       />
     )
@@ -37,11 +38,9 @@ const meta = {
     campo: { name: "Type", control: "inline-radio", options: campos, description: "No código, `type`. Só o `file` muda a aparência: ganha o botão de escolher arquivo.", table: { category: "Conteúdo" } },
     placeholder: { name: "Placeholder", control: "text", description: "Texto de exemplo, em cor apagada, enquanto o campo está vazio.", if: { arg: "campo", eq: "text" }, table: { category: "Conteúdo" } },
     valor: { name: "Value", control: "text", description: "No código, `value` (ou `defaultValue`, quando o próprio Input guarda o valor).", if: { arg: "campo", eq: "text" }, table: { category: "Conteúdo" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. O Input não tem hover no código.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a digitação e esmaece.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado (o Input não tem hover no código). Disabled é `disabled`: impede a digitação e esmaece. Invalid é `aria-invalid`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { campo: "text", placeholder: "Seu nome", valor: "", estado: "Default", disabled: false, invalido: false },
+  args: { campo: "text", placeholder: "Seu nome", valor: "", estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

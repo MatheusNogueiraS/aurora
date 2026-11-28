@@ -6,7 +6,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput, InputGroupText, InputGrou
 import { Kbd } from "@/components/ui/kbd"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
-import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine, type Interacao } from "./Opcoes"
+import { Opcao, Opcoes, Simula, estadoDe, pagina, vitrine } from "./Opcoes"
 
 const posicoes = ["inline-start", "inline-end", "block-start", "block-end"] as const
 type Posicao = (typeof posicoes)[number]
@@ -14,10 +14,11 @@ const conteudos = ["Ícone", "Texto", "Botão", "Kbd", "Spinner"] as const
 type Conteudo = (typeof conteudos)[number]
 const tamanhosBotao = ["xs", "icon-sm"] as const
 type TamanhoBotao = (typeof tamanhosBotao)[number]
-const interacoes: Interacao[] = ["Default", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = ["Default", "Focus", "Disabled", "Invalid"] as const
 const controle = "[data-slot=input-group-control]"
 
-type Controles = { campo: "Input" | "Textarea"; align: Posicao; conteudo: Conteudo; tamanhoBotao: TamanhoBotao; estado: Interacao; disabled: boolean; invalido: boolean }
+type Controles = { campo: "Input" | "Textarea"; align: Posicao; conteudo: Conteudo; tamanhoBotao: TamanhoBotao; estado: (typeof estados)[number] }
 
 // O Storybook não passa o Size do botão quando o addon não é um botão, por isso o padrão aqui.
 const addon = (conteudo: Conteudo, tamanhoBotao: TamanhoBotao = "xs") => {
@@ -25,7 +26,7 @@ const addon = (conteudo: Conteudo, tamanhoBotao: TamanhoBotao = "xs") => {
   return { Ícone: <SearchIcon />, Texto: <InputGroupText>https://</InputGroupText>, Kbd: <Kbd>⌘K</Kbd>, Spinner: <Spinner /> }[conteudo]
 }
 
-const grupo = ({ campo, align, conteudo, tamanhoBotao, disabled, invalido }: Omit<Controles, "estado">) => (
+const grupo = ({ campo, align, conteudo, tamanhoBotao, disabled, invalido }: Omit<Controles, "estado"> & { disabled?: boolean; invalido?: boolean }) => (
   <InputGroup data-disabled={disabled || undefined}>
     {campo === "Input"
       ? <InputGroupInput placeholder="Buscar..." aria-label="Buscar" disabled={disabled || undefined} aria-invalid={invalido || undefined} />
@@ -34,20 +35,18 @@ const grupo = ({ campo, align, conteudo, tamanhoBotao, disabled, invalido }: Omi
   </InputGroup>
 )
 
-const base = { campo: "Input" as const, align: "inline-start" as Posicao, conteudo: "Ícone" as Conteudo, tamanhoBotao: "xs" as TamanhoBotao, disabled: false, invalido: false }
+const base = { campo: "Input" as const, align: "inline-start" as Posicao, conteudo: "Ícone" as Conteudo, tamanhoBotao: "xs" as TamanhoBotao }
 
 const meta = {
   title: "Componentes/InputGroup",
-  render: (args) => grupo(args),
+  render: (args) => grupo({ ...args, disabled: args.estado === "Disabled", invalido: args.estado === "Invalid" }),
   parameters: pagina("Campo com peças coladas dentro dele, como um ícone de busca, um prefixo ou um botão. O fundo, a borda e o foco passam a ser do grupo inteiro. A largura preenche o pai."),
   argTypes: {
-    campo: { name: "Campo", control: "inline-radio", options: ["Input", "Textarea"], description: "`InputGroupInput` ou `InputGroupTextarea`. Com o Textarea, o grupo cresce em altura.", table: { category: "Conteúdo" } },
-    align: { name: "Align do addon", control: "inline-radio", options: posicoes, description: "No código, `align` no `InputGroupAddon`. `inline-start` e `inline-end` ficam nos lados; `block-start` e `block-end`, numa linha em cima ou embaixo.", table: { category: "Aparência" } },
+    campo: { name: "Field", control: "inline-radio", options: ["Input", "Textarea"], description: "`InputGroupInput` ou `InputGroupTextarea`. Com o Textarea, o grupo cresce em altura.", table: { category: "Conteúdo" } },
+    align: { name: "Align", control: "inline-radio", options: posicoes, description: "No código, `align` no `InputGroupAddon`. `inline-start` e `inline-end` ficam nos lados; `block-start` e `block-end`, numa linha em cima ou embaixo.", table: { category: "Aparência" } },
     conteudo: { name: "Addon", control: "inline-radio", options: conteudos, description: "O que vai dentro do `InputGroupAddon`: um ícone, `InputGroupText`, um `Button`, um `Kbd` (ganha fundo translúcido) ou um `Spinner`.", table: { category: "Conteúdo" } },
     tamanhoBotao: { name: "Button size", control: "inline-radio", options: tamanhosBotao, description: "O botão é o `Button` do Aurora, com `variant=\"ghost\"`: `xs` com texto (24 px) ou `icon-sm` só com ícone (32 px, no campo de 36 px).", if: { arg: "conteudo", eq: "Botão" }, table: { category: "Aparência" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado. Com o campo focado, o grupo inteiro ganha a borda e o anel.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled` no campo e `data-disabled` no grupo, que esmaece os addons.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid` no campo: o grupo ganha a borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Focus é simulado: com o campo focado, o grupo inteiro ganha a borda e o anel. Disabled é `disabled` no campo e `data-disabled` no grupo, que esmaece os addons. Invalid é `aria-invalid` no campo: o grupo ganha a borda de erro.", table: { category: "Estado" } },
   },
   args: { ...base, estado: "Default" },
 } satisfies Meta<Controles>

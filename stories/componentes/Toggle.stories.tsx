@@ -10,6 +10,8 @@ const tamanhos = ["sm", "default", "lg"] as const
 // Altura de cada tamanho em toggle.tsx (h-8, h-9, h-10).
 const alturas = { sm: 32, default: 36, lg: 40 } as const
 const interacoes: Interacao[] = ["Default", "Hover", "Focus"]
+// Um State só, como no Figma: Disabled e Invalid são estados, não controles à parte.
+const estados = [...interacoes, "Disabled", "Invalid"] as const
 
 type Controles = {
   variant: (typeof variantes)[number]
@@ -17,15 +19,13 @@ type Controles = {
   texto: string
   soIcone: boolean
   selecionado: boolean
-  estado: Interacao
-  disabled: boolean
-  invalido: boolean
+  estado: (typeof estados)[number]
 }
 
 const meta = {
   title: "Componentes/Toggle",
   // O clique na amostra atualiza o controle Selected, e o controle atualiza a amostra.
-  render: function Amostra({ variant, size, texto, soIcone, selecionado, disabled, invalido }) {
+  render: function Amostra({ variant, size, texto, soIcone, selecionado, estado }) {
     const [, atualizar] = useArgs<Controles>()
     return (
       <Toggle
@@ -33,8 +33,8 @@ const meta = {
         size={size === "default" ? undefined : size}
         pressed={selecionado}
         onPressedChange={(pressionado) => atualizar({ selecionado: pressionado })}
-        disabled={disabled || undefined}
-        aria-invalid={invalido || undefined}
+        disabled={estado === "Disabled" || undefined}
+        aria-invalid={estado === "Invalid" || undefined}
         aria-label={soIcone ? "Negrito" : undefined}
       >
         <BoldIcon data-icon={soIcone ? undefined : "inline-start"} />
@@ -49,11 +49,9 @@ const meta = {
     texto: { name: "Text", control: "text", description: "Some com **Icon only**.", if: { arg: "soIcone", truthy: false }, table: { category: "Conteúdo" } },
     soIcone: { name: "Icon only", control: "boolean", description: "Esconde o texto.", table: { category: "Conteúdo" } },
     selecionado: { name: "Selected", control: "boolean", description: "No código, `pressed` (ou `defaultPressed`, quando o próprio Toggle guarda o valor).", table: { category: "Estado" } },
-    estado: { name: "State", control: "inline-radio", options: interacoes, description: "Simulado: quem aplica é o navegador. O Toggle não muda ao ser clicado (Pressed), só ao ficar selecionado.", table: { category: "Estado" } },
-    disabled: { name: "Disabled", control: "boolean", description: "`disabled`: impede a ação e esmaece.", table: { category: "Estado" } },
-    invalido: { name: "Invalid", control: "boolean", description: "`aria-invalid`: borda de erro.", table: { category: "Estado" } },
+    estado: { name: "State", control: "inline-radio", options: estados, description: "Hover e Focus são simulados: quem aplica é o navegador. O Toggle não muda ao ser clicado (Pressed), só ao ficar selecionado. Disabled é `disabled`: impede a ação e esmaece. Invalid é `aria-invalid`: borda de erro.", table: { category: "Estado" } },
   },
-  args: { variant: "default", size: "default", texto: "Negrito", soIcone: false, selecionado: false, estado: "Default", disabled: false, invalido: false },
+  args: { variant: "default", size: "default", texto: "Negrito", soIcone: false, selecionado: false, estado: "Default" },
 } satisfies Meta<Controles>
 
 export default meta

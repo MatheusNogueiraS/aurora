@@ -7,37 +7,39 @@ import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { Opcao, Opcoes, pagina, vitrine } from "./Opcoes"
 
-// As teclas mais comuns em atalhos. No código, a tecla é só o conteúdo do Kbd: qualquer texto ou ícone.
-const TECLAS = {
-  Ctrl: "Ctrl",
-  Shift: "Shift",
-  Alt: "Alt",
-  Tab: "Tab",
-  Esc: "Esc",
-  Enter: "Enter",
-  Espaço: "Espaço",
-  "Command (Mac)": <CommandIcon />,
+// As teclas que viram ícone. No código, a tecla é só o conteúdo do Kbd: qualquer texto ou ícone.
+const ICONES = {
+  Command: <CommandIcon />,
   // O Mac escreve o Control como ⌃; o lucide não tem esse ícone, e a seta para cima fina é o mais parecido.
-  "Control (Mac)": <ChevronUpIcon />,
-  "Option (Mac)": <OptionIcon />,
-  "Seta para cima": <ArrowUpIcon />,
-  "Seta para baixo": <ArrowDownIcon />,
-  "Seta para a esquerda": <ArrowLeftIcon />,
-  "Seta para a direita": <ArrowRightIcon />,
+  Control: <ChevronUpIcon />,
+  Option: <OptionIcon />,
+  "Arrow up": <ArrowUpIcon />,
+  "Arrow down": <ArrowDownIcon />,
+  "Arrow left": <ArrowLeftIcon />,
+  "Arrow right": <ArrowRightIcon />,
 }
+// Como no Figma: Content (texto ou ícone) e Context, onde o Kbd muda de aparência.
+const conteudos = ["Text", "Icon"] as const
+const contextos = ["default", "Input Group", "Tooltip"] as const
 
-type Controles = { tecla: keyof typeof TECLAS; livre: boolean; texto: string }
+type Controles = { conteudo: (typeof conteudos)[number]; texto: string; icone: keyof typeof ICONES; contexto: (typeof contextos)[number] }
 
 const meta = {
   title: "Componentes/Kbd",
-  render: ({ tecla, livre, texto }) => <Kbd>{livre ? texto : TECLAS[tecla]}</Kbd>,
+  render: ({ conteudo, texto, icone, contexto }) => {
+    const tecla = <Kbd>{conteudo === "Icon" ? ICONES[icone] : texto}</Kbd>
+    if (contexto === "Input Group") return <InputGroup className="w-64"><InputGroupInput placeholder="Buscar" aria-label="Buscar" /><InputGroupAddon align="inline-end">{tecla}</InputGroupAddon></InputGroup>
+    if (contexto === "Tooltip") return <Tooltip open><TooltipTrigger render={<Button variant="outline" />}>Imprimir</TooltipTrigger><TooltipContent>Imprimir {tecla}</TooltipContent></Tooltip>
+    return tecla
+  },
   parameters: pagina("Mostra uma tecla do teclado, como num atalho. Não tem Type, Size nem State."),
   argTypes: {
-    tecla: { name: "Tecla", control: "select", options: Object.keys(TECLAS), description: "No código, a tecla é o conteúdo do Kbd: qualquer texto ou ícone. A lista traz as mais comuns.", if: { arg: "livre", truthy: false }, table: { category: "Conteúdo" } },
-    livre: { name: "Custom key", control: "boolean", description: "Troca a lista por um campo para escrever a tecla, como uma letra.", table: { category: "Conteúdo" } },
-    texto: { name: "Text", control: "text", if: { arg: "livre" }, table: { category: "Conteúdo" } },
+    conteudo: { name: "Content", control: "inline-radio", options: conteudos, description: "O conteúdo do Kbd: um texto, como `Ctrl`, ou um ícone, como o ⌘.", table: { category: "Conteúdo" } },
+    texto: { name: "Text", control: "text", if: { arg: "conteudo", eq: "Text" }, table: { category: "Conteúdo" } },
+    icone: { name: "↳ Icon", control: "select", options: Object.keys(ICONES), if: { arg: "conteudo", eq: "Icon" }, table: { category: "Conteúdo" } },
+    contexto: { name: "Context", control: "inline-radio", options: contextos, description: "Onde o Kbd está. Não é propriedade: dentro de um `InputGroup` ou de um `Tooltip`, o próprio Kbd muda de fundo.", table: { category: "Aparência" } },
   },
-  args: { tecla: "Ctrl", livre: false, texto: "K" },
+  args: { conteudo: "Text", texto: "Ctrl", icone: "Command", contexto: "default" },
 } satisfies Meta<Controles>
 
 export default meta
@@ -50,8 +52,8 @@ export const Conteudo: Story = {
   parameters: vitrine("`KbdGroup` junta as teclas de um atalho."),
   render: () => (
     <Opcoes>
-      <Opcao nome="Texto"><Kbd>K</Kbd></Opcao>
-      <Opcao nome="Ícone"><Kbd><CommandIcon /></Kbd></Opcao>
+      <Opcao nome="Text"><Kbd>K</Kbd></Opcao>
+      <Opcao nome="Icon"><Kbd><CommandIcon /></Kbd></Opcao>
       <Opcao nome="KbdGroup"><KbdGroup><Kbd>Ctrl</Kbd><Kbd>K</Kbd></KbdGroup></Opcao>
       <Opcao nome="KbdGroup com +"><KbdGroup><Kbd>Ctrl</Kbd><span>+</span><Kbd>B</Kbd></KbdGroup></Opcao>
     </Opcoes>
